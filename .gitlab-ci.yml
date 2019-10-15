@@ -15,65 +15,22 @@ before_script:
 
 test_production:
   stage: test
-  image: registry.gitlab.com/vizitrip/api-x
+  image: registry.gitlab.com/luridarmawan/smartfarm
   script:
     - '# TEST PASSED .... (dummy)'
 
-build_log:
+build_station:
   stage: deploy
   image: luri/ssh-client
   script:
-    - '# Compiling & Build Log Application'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh log'"
+    - '# Compiling & Build Station Application Module'
+    - ssh ubuntu@$PRODUCTION_HOST "sudo su - smartfarm -c 'cd $SOURCE_PATH/source && ./build.sh station'"
   when: manual
 
-build_analytics:
+build_node:
   stage: deploy
   image: luri/ssh-client
   script:
-    - '# Compiling & Build Analytics Application'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh analytics'"
+    - '# Compiling & Build Node & History Application Module'
+    - ssh ubuntu@$PRODUCTION_HOST "sudo su - smartfarm -c 'cd $SOURCE_PATH/source && ./build.sh node'"
   when: manual
-
-build_suggestion:
-  stage: deploy
-  image: luri/ssh-client
-  script:
-    - '# Compiling & Build Search Application'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source/suggestion && ./build.sh suggestion'"
-  when: manual
-
-build_hotel:
-  stage: deploy
-  image: luri/ssh-client
-  script:
-    - '# Compiling & Build Hotel Application'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh hotel'"
-  when: manual
-
-build_message:
-  stage: deploy
-  image: luri/ssh-client
-  script:
-    - '# Compiling & Build Messaging Feature'
-    - echo $CI_JOB_STAGE
-    - echo $CI_JOB_TOKEN
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh message'"
-  when: manual
-
-build_search:
-  stage: deploy
-  image: luri/ssh-client
-  script:
-    - '# Compiling & Build Simple Search Feature'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh search'"
-  when: manual
-
-build_image:
-  stage: deploy
-  image: luri/ssh-client
-  script:
-    - '# Compiling & Build Image Proxy'
-    - ssh ubuntu@$PRODUCTION_HOST "sudo su - apix -c 'cd $SOURCE_PATH/source && ./build.sh image'"
-  when: manual
-

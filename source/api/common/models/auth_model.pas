@@ -22,8 +22,6 @@ implementation
 constructor TAuthModel.Create(const DefaultTableName: string = '');
 begin
   inherited Create(DefaultTableName); // table name = devices
-
-  //inherited Create('yourtablename'); // if use custom tablename
 end;
 
 function isAuthenticated: boolean;
