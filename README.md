@@ -4,6 +4,10 @@ Repository ini menyimpan source API dan Hub yang digunakan dalam workshop SmartF
 
 Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi.
 
+## Arsitektur
+
+![Arsitektur](docs/images/arsitektur.png)
+
 ## Installation
 
 ### Prerequisites
