@@ -1,0 +1,44 @@
+{
+  "systems": {
+    "sitename": "SmartFarm API",
+    "slogan": "API for SmartFarm Application",
+    "baseurl": "",
+    "admin_email": "admin@pascal-id.org",
+    "development": true,
+    "debug": true,
+    "module_default": "main",
+    "language_default": "id",
+    "theme_enable": false,
+    "theme": "default",
+    "cache": "none",
+    "temp": "ztemp",
+    "error_url": "\/",
+    "session_timeout": 0,
+    "error_redirect": false
+  },
+  "database": {
+    "default": {
+      "driver": "MySQL 5.7",
+      "hostname": "localhost",
+      "port": "",
+      "username": "root",
+      "password": "root",
+      "database_name": "smartfarm",
+      "prefix": "",
+      "library": ""
+    }
+  },
+  "image": {
+    "sourceBaseURL": "https://cdn.carik.id/"
+  },
+  "mailer": {
+    "default": {
+      "hostname": "your.smtp.server",
+      "username": "your_username",
+      "password": "the_password",
+      "smtp_port": "465",
+      "ssl": true,
+      "tls": true
+    }
+  }
+}
