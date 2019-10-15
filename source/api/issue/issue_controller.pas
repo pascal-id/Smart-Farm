@@ -54,29 +54,10 @@ begin
 end;
 
 // POST Method Handler
-// CURL example:
-//   curl -X POST -H "Authorization: Basic dW5hbWU6cGFzc3dvcmQ=" "yourtargeturl"
 procedure TIssuesModule.Post;
-var
-  json : TJSONUtil;
-  authstring : string;
 begin
-  authstring := Header['Authorization'];
-  if authstring <> 'YourAuthKey' then
-  begin
-    //
-  end;
-  json := TJSONUtil.Create;
-
-  json['code'] := Int16(0);
-  json['data'] := 'yourdatahere';
-  json['path01/path02/var01'] := 'value01';
-  json['path01/path02/var02'] := 'value02';
-  CustomHeader[ 'ThisIsCustomHeader'] := 'datacustomheader';
-
   //---
-  Response.Content := json.AsJSON;
-  json.Free;
+  Response.Content := '{}';
 end;
 
 

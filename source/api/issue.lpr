@@ -4,7 +4,8 @@ program issue;
 
 uses
   {$IFNDEF Windows}cthreads,{$ENDIF}
-  fpcgi, sysutils, fastplaz_handler, common, issue_controller, issue_routes;
+  fpcgi, sysutils, fastplaz_handler, common, issue_controller, issue_routes,
+  issue_model;
 
 begin
   Application.Title:='Issues';

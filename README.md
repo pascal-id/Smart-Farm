@@ -8,7 +8,16 @@ Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi
 
 ![Arsitektur](docs/images/arsitektur.png)
 
-## Installation
+Arsitektur sistem ini menunjukan bahwa terdapat beberapa seksi perangkat:
+- _Device controller_, dengan menggunakan arduino. Untuk membaca dan mengendalikan sensor/motor.
+- Manajemen Hub, menggunakan Rasberry Pi. Hub ini menghubungkan antara _end-user_ yang menggunakan aplikasi mobile guna membaca dan mengendalikan sensor yang dilayani oleh _Device Controller_. 
+Proses komunikasi dilakukan melalui API (_Application Programming Interface_)
+- API Server, sebagai pusat logic kendali dari keseluruhan sistem.
+- Aplikasi (mobile). Antar muka akhir pengguna dalam memantau kondisi **Smart Farm**-nya.
+
+* Belum termasuk dashboard.
+
+## Instalasi
 
 ### Prerequisites
 
@@ -19,11 +28,11 @@ Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi
 
 ### Deploy to server
 
-### Configuration
+### Konfigurasi API
 
-Open file ```public_html/config/config.json``` in your webroot directory. Make update that necessary.
+Buka file ```public_html/config/config.json``` di direktori webroot. Sesuaikan isinya dengan kebutuhan Anda.
 
-## How to Use
+## Detail Penggunaan Endpoint API
 
 - [Station List](docs/Station.md)
 - [Node](docs/Node.md)

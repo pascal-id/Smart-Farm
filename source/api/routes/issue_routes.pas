@@ -9,10 +9,9 @@ uses
 
 implementation
 
-uses info_controller, issue_controller;
+uses issue_controller;
 
 initialization
-  Route[ 'info'] := TInfoModule;
   Route[ '/'] := TIssuesModule; // Main Module
 
 end.
