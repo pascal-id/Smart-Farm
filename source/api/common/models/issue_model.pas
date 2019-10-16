@@ -18,7 +18,7 @@ implementation
 
 constructor TIssuesModel.Create(const DefaultTableName: string = '');
 begin
-  inherited Create( DefaultTableName); // table name = issuess
+  inherited Create( 'issues');
   primaryKey := 'iid';
 end;
 
