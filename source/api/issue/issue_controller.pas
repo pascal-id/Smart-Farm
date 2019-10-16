@@ -7,7 +7,7 @@ unit issue_controller;
 
   [x] Set Schedule
   curl -X POST "smartfarm.pascal-id.test/issue/" \
-    -d 'stationId=tgr123&nodeId=qsw345sxP&....'
+  -d 'stationId=tgr123&nodeId=qsw345sxP&type=1&level=2&activity=[activity]&description=[description]'
 
 }
 
@@ -36,7 +36,7 @@ type
 
 implementation
 
-uses common, auth_model;
+uses common, auth_model, issue_model, station_model, node_model;
 
 constructor TIssuesModule.CreateNew(AOwner: TComponent; CreateMode: integer);
 begin
@@ -62,6 +62,7 @@ procedure TIssuesModule.Get;
 var
   json: TJSONUtil;
   queryToSelectIssues: TStringList;
+  issue: TIssuesModel;
   issueArray: TJSONArray;
   nodeWhere: string;
 begin
@@ -104,12 +105,66 @@ end;
 
 // POST Method Handler
 procedure TIssuesModule.Post;
+var
+  stationId, nodeId, responseCode: Integer;
+  typeId, levelId: Integer;
+  msg, activity, descriptionIssue: String;
+  issue: TIssuesModel;
+  station: TStationModel;
+  node: TNodeModel;
 begin
-  //---
-  Response.Content := '{}';
+  FStationID := _POST['stationId'];
+  FNodeID := _POST['nodeId'];
+  activity := _POST['activity'];
+  typeId := s2i(_POST['type']);
+  levelId := s2i(_POST['level']);
+  descriptionIssue := _POST['description'];
+
+  if FStationID.IsEmpty or FNodeID.IsEmpty or activity.IsEmpty or descriptionIssue.IsEmpty then
+    OutputJson(400, ERR_INVALID_PARAMETER);
+
+  DataBaseInit();
+
+  station := TStationModel.Create();
+  if not station.Find(['slug="' + FStationID + '"']) then
+  begin
+    station.Free;
+    OutputJson(404, ERR_STATION_NOT_FOUND);
+  end;
+  stationId := station['sid'];
+
+  node := TNodeModel.Create();
+  if not node.Find(['slug="' + FNodeID + '"']) then
+  begin
+    station.Free;
+    node.Free;
+    OutputJson(404, ERR_NODE_NOT_FOUND);
+  end;
+  nodeId := node['nid'];
+
+  station.Free;
+  node.Free;
+
+  issue := TIssuesModel.Create();
+  issue['date'] := Now;
+  issue['station_id'] := stationId;
+  issue['node_id'] := nodeId;
+
+  issue['activity'] := activity;
+  issue['type_id'] := typeId;
+  issue['level_id'] := levelId;
+  issue['description'] := descriptionIssue;
+  issue['status_id'] := 0;
+  msg := OK;
+  responseCode := 200;
+  if not issue.Save() then
+  begin
+    msg := FAILED;
+    responseCode := 400;
+  end;
+  issue.Free;
+  OutputJson(responseCode, msg);
 end;
-
-
 
 end.
 
