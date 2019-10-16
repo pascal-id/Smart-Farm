@@ -66,7 +66,7 @@ var
   whereAsArray: TStringArray;
   json: TJSONUtil;
   schedulesAsJsonArray: TJSONArray;
-  schedulesAsString, sMessage: string;
+  schedulesAsString: string;
 begin
   FStationID := _GET['stationId'];
   FNodeID := _GET['nodeId'];
@@ -132,7 +132,7 @@ end;
 // POST Method Handler
 procedure TScheduleModule.Post;
 var
-  scheduleAsString, nodeId: String;
+  scheduleAsString: String;
   node: TNodeModel;
 begin
   FStationID := _POST['stationId'];
@@ -159,7 +159,6 @@ begin
     OutputJson(404, ERR_NODE_NOT_FOUND);
   end;
 
-  nodeId := node['nid'];
   node['schedules'] := scheduleAsString;
   if node.Save('slug="' + FNodeID + '"') then
   begin
