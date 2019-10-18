@@ -218,3 +218,4 @@ public_html/carik/ztemp/sessions/*
 *.bin
 backup.bat
 backup.sh
+/source/hub/smartfarmhub
