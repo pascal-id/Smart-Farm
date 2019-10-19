@@ -1,12 +1,19 @@
 unit node_history_controller;
+{
+  USAGE:
 
+  [x] Get Device Info
+  curl "smartfarm.pascal-id.test/node/history/?userId=tgr123&id=qsw345sxP"
+
+}
 {$mode objfpc}{$H+}
 
 interface
 
 uses
   Classes, SysUtils, fpcgi, fpjson, json_lib, HTTPDefs, fastplaz_handler,
-  database_lib, string_helpers, dateutils, datetime_helpers, json_helpers;
+  database_lib, string_helpers, dateutils, datetime_helpers, json_helpers,
+  array_helpers;
 
 {$include ../common/smartfarm.inc}
 
@@ -54,12 +61,14 @@ end;
 procedure TNodeHistoryModule.Get;
 var
   i, indexOptions, limitQuery: integer;
-  nodeOptions: string;
+  nodeOptions, field: string;
   nodeHistory: TNodeHistoryModel;
+  whereAsArray: TStringArray;
   historyAsArray: TJSONArray;
   json: TJSONUtil;
 begin
   FID := _GET['id'];
+  field := _GET['field'];
   limitQuery := s2i(_GET['limit']);
   if limitQuery = 0 then
     limitQuery := 10;
@@ -72,7 +81,10 @@ begin
 
   DataBaseInit;
   nodeHistory := TNodeHistoryModel.Create;
-  if not nodeHistory.Find(['slug="' + FID + '"'], 'date desc', limitQuery) then
+  whereAsArray.Add('slug="' + FID + '"');
+  if not field.IsEmpty then
+    whereAsArray.Add(field + ' IS NOT NULL');
+  if not nodeHistory.Find(whereAsArray, 'date desc', limitQuery) then
   begin
     nodeHistory.Free;
     OutputJson(404, ERR_NODE_NOT_FOUND);
