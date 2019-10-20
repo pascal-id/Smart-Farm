@@ -79,11 +79,15 @@ Setiap alat yang mempunyai fungsi penjadwalan otomatis bisa menggunakan data ber
 ]
 ```
 
+
+
 | Field  | Type | Description |
-|---|---|---|---|
-| type | s | 0: tipe_0 <br/> 1: tipe_1  |
-| mode | s | 0: mode_0 <br/> 1: mode_1  |
-| active | s | 0: active <br/> 1: inactive  |
+|---|---|---|
+| type |  | 0: tipe_0,<br />1: tipe_1  |
+| mode |  | 0: mode_0,<br />1: mode_1  |
+| active |  | 0: active,<br />1: inactive  |
+
+
 
 ## Informasi Node
 
