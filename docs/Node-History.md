@@ -9,8 +9,8 @@ Parameters:
 
 | Name  |   | Type  |  Description |
 |---|---|---|---|
-| id | required | string  | specific node id |
-| limit | optional | integer  | number of data, default = 10|
+| id | optional | string  | specific node id, empty = all |
+| limit | optional | integer  | number of data, default = all today histories |
 
 
 ## USAGE

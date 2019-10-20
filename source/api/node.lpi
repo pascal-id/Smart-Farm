@@ -69,7 +69,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="routes;device;common/models;node"/>
+      <OtherUnitFiles Value="routes;device;common/models;node;../../../vendors/fastplaz/FastPlaz/src/vendor/dcrypt"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Other>

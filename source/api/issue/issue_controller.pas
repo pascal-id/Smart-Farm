@@ -65,11 +65,16 @@ var
   issue: TIssuesModel;
   issueArray: TJSONArray;
   nodeWhere: string;
+  limitIssue: Integer;
 begin
   FStationID := _GET['stationId'];
   FNodeID := _GET['nodeId'];
+  limitIssue := s2i(_GET['limit']);
   if FStationID.IsEmpty then
     OutputJson(401, ERR_INVALID_PARAMETER);
+
+  if limitIssue = 0 then
+    limitIssue := 20;
 
   DataBaseInit();
   queryToSelectIssues := TStringList.Create;
@@ -84,7 +89,7 @@ begin
     #10'FROM issues' + #10'JOIN stations s ON issues.station_id=s.sid AND s.status_id=0 AND s.slug="' + FStationID + '"' +
     #10'JOIN nodes n ON issues.node_id=n.nid AND n.status_id=0' + nodeWhere +
     #10'WHERE issues.status_id=0 ORDER BY issues.date DESC' +
-    #10'LIMIT 20';
+    #10'LIMIT ' + i2s(limitIssue);
 
   issueArray := TJSONArray.Create;
   if not QueryOpenToJson(queryToSelectIssues.Text, issueArray, false) then

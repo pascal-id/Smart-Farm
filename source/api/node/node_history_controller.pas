@@ -3,7 +3,7 @@ unit node_history_controller;
   USAGE:
 
   [x] Get Device Info
-  curl "smartfarm.pascal-id.test/node/history/?userId=tgr123&id=qsw345sxP"
+  curl "smartfarm.pascal-id.test/node/history/?stationId=tgr123&id=qsw345sxP"
 
 }
 {$mode objfpc}{$H+}
@@ -61,34 +61,41 @@ end;
 procedure TNodeHistoryModule.Get;
 var
   i, indexOptions, limitQuery: integer;
-  nodeOptions, field: string;
+  s, nodeOptions, field: string;
+  deviceOptionAsJson: TJSONData;
   nodeHistory: TNodeHistoryModel;
   whereAsArray: TStringArray;
   historyAsArray: TJSONArray;
   json: TJSONUtil;
+  temperatureAverage, humidityAverage: Double;
+  temperatureCount, humidityCount: Integer;
 begin
+  temperatureAverage := 0;
+  humidityAverage := 0;
+  temperatureCount := 0;
+  humidityCount := 0;
   FID := _GET['id'];
   field := _GET['field'];
   limitQuery := s2i(_GET['limit']);
-  if limitQuery = 0 then
-    limitQuery := 10;
-  if FID.IsEmpty then
-  begin
-    OutputJson(404, ERR_INVALID_PARAMETER);
-  end;
 
   //TODO: check is related to user or not
 
   DataBaseInit;
   nodeHistory := TNodeHistoryModel.Create;
-  whereAsArray.Add('slug="' + FID + '"');
+  if not FID.IsEmpty then
+    whereAsArray.Add('node_history.slug="' + FID + '"');
   if not field.IsEmpty then
     whereAsArray.Add(field + ' IS NOT NULL');
+  if limitQuery = 0 then
+    whereAsArray.Add('date >= CURDATE()');
+  nodeHistory.AddJoin('nodes', 'nid', 'node_id', ['name']);
   if not nodeHistory.Find(whereAsArray, 'date desc', limitQuery) then
   begin
     nodeHistory.Free;
     OutputJson(404, ERR_NODE_NOT_FOUND);
   end;
+
+  //die(nodeHistory.SQL.Text);
 
   historyAsArray := TJSONArray.Create;
   if not DataToJSON(nodeHistory.Data, historyAsArray, False) then
@@ -101,7 +108,6 @@ begin
   begin
     historyAsArray.Items[i].Delete('nhid');
     historyAsArray.Items[i].Delete('status_id');
-    historyAsArray.Items[i].Delete('slug');
     historyAsArray.Items[i].Delete('node_id');
 
     //convert options string value to json string formatted
@@ -113,16 +119,41 @@ begin
         if nodeOptions.Trim.IsEmpty then
           nodeOptions := '{}';
         if IsJsonValid(nodeOptions) then
+        begin
+          deviceOptionAsJson := GetJSON(nodeOptions);
+
+          // get average temperature
+          s := jsonGetData(deviceOptionAsJson, TEMPERATURE_KEY + '/value');
+          if not s.IsEmpty then
+          begin
+            temperatureAverage:= temperatureAverage + s2f(s);
+            temperatureCount:= temperatureCount+1;
+          end;
+
+          // get humidity temperature
+          s := jsonGetData(deviceOptionAsJson, HUMIDITY_KEY + '/value');
+          if not s.IsEmpty then
+          begin
+            humidityAverage:= humidityAverage + s2f(s);
+            humidityCount:= humidityCount+1;
+          end;
+
           historyAsArray.Items[i].Items[indexOptions] := GetJSON(nodeOptions);
+        end;
       except
       end;
     end;
 
   end;
 
+  temperatureAverage := temperatureAverage / temperatureCount;
+  humidityAverage := humidityAverage / humidityCount;
+
   json := TJSONUtil.Create;
   json['code'] := 0;
   json['count'] := historyAsArray.Count;
+  json['info/temperature_average'] := temperatureAverage;
+  json['info/humidity_average'] := humidityAverage;
   json.ValueArray['data'] := historyAsArray;
   Response.Content := json.AsJSON;
   nodeHistory.Free;

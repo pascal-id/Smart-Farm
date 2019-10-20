@@ -70,7 +70,7 @@ var
 begin
   FStationID := _GET['stationId'];
   FNodeID := _GET['nodeId'];
-  if FStationID.IsEmpty or FNodeID.IsEmpty then
+  if FStationID.IsEmpty then
     OutputJson(401, ERR_INVALID_PARAMETER);
 
   // Prepare data selection

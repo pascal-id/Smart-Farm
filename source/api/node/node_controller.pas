@@ -9,10 +9,9 @@ unit node_controller;
   curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&value=3'
 
   curl -X POST "smartfarm.pascal-id.test/node/" \
-    -d 'id=qsw345sxP&state=1&value=3&options={"suhu":34,"kelembaban":45,"time":{"08:30": 5000,"16:00": 10000}}'
+    -d 'id=qsw345sxP&state=1&value=3&options={"suhu":{"state": 0,"value": 30},"kelembaban":{"state": 0,"value": 55},"sprinkler":{"state": 1}}'
 
 }
-
 {$mode objfpc}{$H+}
 
 interface
@@ -57,7 +56,7 @@ procedure TNodeModule.BeforeRequestHandler(Sender: TObject; ARequest: TRequest);
 begin
   Response.ContentType := 'application/json';
   if not isAuthenticated then
-    OutputJson(401, ERR_NOT_PERMITTED);
+    OutputJson(401, ERR_AUTH_UNAUTHORIZED);
 end;
 
 // GET Method Handler
@@ -148,17 +147,19 @@ begin
 end;
 
 // POST Method Handler
-// CURL example:
-//   curl -X POST -H "Authorization: Basic dW5hbWU6cGFzc3dvcmQ=" "yourtargeturl"
 procedure TNodeModule.Post;
 var
   i: integer;
   sKey, sDid, sMessage: string;
   device: TNodeModel;
   history: TNodeHistoryModel;
-  deviceState, deviceValue, deviceOptions, existingDeviceOptions: string;
+  deviceState, deviceValue, deviceOptions, activity, description: string;
   deviceOptionsAsJson, existingDeviceOptionsAsJson: TJSONObject;
+  temperatureAverageExisting, humidityAverageExisting,
+    temperatureUpdate, humadityUpdate: Double;
 begin
+  activity := '';
+  description := '';
   FID := _POST['id'];
   if FID.IsEmpty then
   begin
@@ -170,7 +171,11 @@ begin
   deviceState := _POST['state'];
   deviceValue := _POST['value'];
   deviceOptions := _POST['options'];
+  //deviceOptions := UrlDecode(deviceOptions);
+  deviceOptions := deviceOptions.Replace('\n', #10);
   deviceOptions := deviceOptions.Replace('\"', '"');
+  if not IsJsonValid(deviceOptions) then
+    OutputJson(400, ERR_INVALID_PARAMETER_VALUE);
 
   if (deviceState.IsEmpty and deviceValue.IsEmpty and deviceOptions.IsEmpty) then
     OutputJson(404, ERR_INVALID_PARAMETER);
@@ -194,7 +199,35 @@ begin
     //rebuild options json
     if IsJsonValid(deviceOptions) then
     begin
-      existingDeviceOptions := device['options'];
+      deviceOptionsAsJson := TJSONObject( GetJSON(deviceOptions));
+      temperatureUpdate := s2f(jsonGetData(deviceOptionsAsJson, TEMPERATURE_KEY + '/value'));
+      humadityUpdate := s2f(jsonGetData(deviceOptionsAsJson, HUMIDITY_KEY + '/value'));
+
+      // set temperature average
+      if temperatureUpdate > 0 then
+      begin
+        temperatureAverageExisting := device.Data.FieldByName('temperature_average').AsFloat;
+        if temperatureAverageExisting > 0 then
+        begin
+          temperatureUpdate := (temperatureUpdate + temperatureAverageExisting) / 2;
+          description := 'temperature,';
+        end;
+        device['temperature_average'] := temperatureUpdate;
+      end;
+
+      // set humidity average
+      if humadityUpdate > 0 then
+      begin
+        humidityAverageExisting := device.Data.FieldByName('humidity_average').AsFloat;
+        if humidityAverageExisting > 0 then
+        begin
+          humadityUpdate := (humadityUpdate + humidityAverageExisting) / 2;
+          description:= description + 'humadity,';
+        end;
+        device['humidity_average'] := humadityUpdate;
+      end;
+
+      {
       if IsJsonValid(existingDeviceOptions) then
       begin
         deviceOptionsAsJson := TJSONObject( GetJSON(deviceOptions));
@@ -208,6 +241,8 @@ begin
         existingDeviceOptionsAsJson.Free;
         //deviceOptionsAsJson.Free;
       end;
+      }
+      activity := 'bulk';
       device['options'] := deviceOptions;
     end;
   end;
@@ -217,6 +252,8 @@ begin
     history['date'] := Now.Format();
     history['slug'] := FID;
     history['node_id'] := sDID;
+    history['activity'] := activity;
+    history['description'] := description;
     history['status_id'] := 0;
     if not deviceState.IsEmpty then
       history['state'] := deviceState;
