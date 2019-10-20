@@ -219,3 +219,4 @@ public_html/carik/ztemp/sessions/*
 backup.bat
 backup.sh
 /source/hub/smartfarmhub
+/source/arduino/arduinodummyserver

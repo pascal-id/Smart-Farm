@@ -46,54 +46,47 @@ begin
 end;
 
 function GetUpdateData: TUpdateData;
-var
-  LStateNode: TJSONData;
-  Continue: Boolean;
+type
+  TReturnType = (rtFloat,rtInteger,rtString);
+  TBombardResult = record
+    Assigned: Boolean;
+    case TReturnType of
+      rtFloat  : (FloatValue  : Double);
+      rtInteger: (IntegerValue: Integer);
+      rtString : (StringValue : ShortString);
+  end;
+
+  function BombardUntilCorrect(const AURL,APath: String; const AReturnType: TReturnType): TBombardResult;
+  var
+    LStateNode: TJSONData;
+    Continue: Boolean;
+  begin
+    Continue := true;
+    repeat
+      with GetJSONResponse(hmGET, AURL) do
+        try
+          LStateNode := FindPath('param');
+          if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(AURL)) then begin
+            LStateNode := FindPath(APath);
+            Result.Assigned := Assigned(LStateNode);
+            if Result.Assigned then
+              case AReturnType of
+                rtFloat  : Result.FloatValue   := LStateNode.AsFloat;
+                rtInteger: Result.IntegerValue := LStateNode.AsInteger;
+                rtString : Result.StringValue  := LStateNode.AsString;
+              end;
+            Continue := false;
+          end;
+        finally
+          Free;
+        end;
+    until not Continue;
+  end;
+
 begin
-  Continue := true;
-  repeat
-    with GetJSONResponse(hmGET, GetTemperatureURL) do
-      try
-        LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetTemperatureURL)) then begin
-          LStateNode := FindPath('data.nilai');
-          if Assigned(LStateNode) then Result.Temperature := LStateNode.AsFloat;
-          Continue := false;
-        end;
-      finally
-        Free;
-      end;
-  until not Continue;
-
-  Continue := true;
-  repeat
-    with GetJSONResponse(hmGET, GetHumidityURL) do
-      try
-        LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetHumidityURL)) then begin
-          LStateNode := FindPath('data.nilai');
-          if Assigned(LStateNode) then Result.Humidity := LStateNode.AsInteger;
-          Continue := false;
-        end;
-      finally
-        Free;
-      end;
-  until not Continue;
-
-  Continue := true;
-  repeat
-    with GetJSONResponse(hmGET, GetSprinkleStatusURL) do
-      try
-        LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetSprinkleStatusURL)) then begin
-          LStateNode := FindPath('data.status');
-          Result.IsSprinkleOn := Assigned(LStateNode) and (LStateNode.AsString = 'nyala');
-          Continue := false;
-        end;
-      finally
-        Free;
-      end;
-  until not Continue;
+  Result.Temperature  := BombardUntilCorrect(GetTemperatureURL, 'data.nilai', rtFloat).FloatValue;
+  Result.Humidity     := BombardUntilCorrect(GetHumidityURL, 'data.nilai', rtInteger).IntegerValue;
+  Result.IsSprinkleOn := BombardUntilCorrect(GetSprinkleStatusURL, 'data.status', rtString).StringValue = 'nyala';
 end;
 
 procedure ToggleSprinkle(const AIsOn: Boolean);
