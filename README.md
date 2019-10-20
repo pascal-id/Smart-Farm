@@ -38,6 +38,7 @@ Buka file ```public_html/config/config.json``` di direktori webroot. Sesuaikan i
 - [Node](docs/Node.md)
 - [Node History](docs/Node-History.md)
 - [Schedule](docs/Schedule.md)
+- [Konvensi Transmisi Data](docs/Convention.md)
 
 Thanks
 
