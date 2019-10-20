@@ -121,7 +121,7 @@ var
   OptionsJSON: String;
 begin
   if AIsSprinkleOn then AIsSprinkleOnIntVal := 0 else AIsSprinkleOnIntVal := 1;
-  OptionsJSON := Format('{"suhu":{"value":%02f,"state":0"},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
+  OptionsJSON := Format('{"suhu":{"value":%02f,"state":0},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
   GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),URLEncodeParams([KVP('id',NodeID),KVP('options',OptionsJSON)]));
 end;
 

@@ -34,6 +34,17 @@ uses
   fpJSON,
   utils;
 
+function GetURLParam(const AURL: String): String;
+var
+  QuestionMarkPos: Integer;
+begin
+  Result := '';
+  QuestionMarkPos := Pos('?',AURL);
+  if QuestionMarkPos > 0 then begin
+    Result := Copy(AURL,QuestionMarkPos + 1, Length(AURL) - QuestionMarkPos);
+  end
+end;
+
 function GetUpdateData: TUpdateData;
 var
   LStateNode: TJSONData;
@@ -44,7 +55,7 @@ begin
     with GetJSONResponse(hmGET, GetTemperatureURL) do
       try
         LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = 'module=suhu') then begin
+        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetTemperatureURL)) then begin
           LStateNode := FindPath('data.nilai');
           if Assigned(LStateNode) then Result.Temperature := LStateNode.AsFloat;
           Continue := false;
@@ -59,7 +70,7 @@ begin
     with GetJSONResponse(hmGET, GetHumidityURL) do
       try
         LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = 'module=kelembaban') then begin
+        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetHumidityURL)) then begin
           LStateNode := FindPath('data.nilai');
           if Assigned(LStateNode) then Result.Humidity := LStateNode.AsInteger;
           Continue := false;
@@ -74,7 +85,7 @@ begin
     with GetJSONResponse(hmGET, GetSprinkleStatusURL) do
       try
         LStateNode := FindPath('param');
-        if Assigned(LStateNode) and (LStateNode.AsString = 'module=status-kran') then begin
+        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(GetSprinkleStatusURL)) then begin
           LStateNode := FindPath('data.status');
           Result.IsSprinkleOn := Assigned(LStateNode) and (LStateNode.AsString = 'nyala');
           Continue := false;
