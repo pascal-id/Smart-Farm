@@ -5,16 +5,31 @@ unit SmartFarmServer;
 interface
 
 uses
-  SysUtils,
-  generics.collections;
+  SysUtils;
 
 type
-  TScheduleSprinkleRequestMap = specialize TDictionary<String,String>;
-  TScheduleSprinkleRequest = specialize TPair<String,String>;
+  TValueState = record
+    Value: Integer;
+    State: Integer;
+  end;
+
+  TDaySet = set of 0 .. 6;
+
+  TSchedule = record
+    Type_: Integer;
+    Mode: Integer;
+    IsActive: Boolean;
+    Value: String;
+    Days: TDaySet;
+  end;
+
+  TScheduleList = array of TSchedule;
 
   TUpdateData = record
-    TurnSprinkleOn: Boolean;
-    ScheduleSprinkleRequestMap: TScheduleSprinkleRequestMap;
+    Temperature: TValueState;
+    Humidity: TValueState;
+    Sprinkle: TValueState;
+    Schedules: TScheduleList;
   end;
 
 var
@@ -30,51 +45,84 @@ implementation
 
 uses
   httpdefs,
-  fphttpclient,
   fpJSON,
   utils;
 
-var
-  UpdateDataResp: TUpdateData;
-
 function GetUpdateData: TUpdateData;
 var
-  StateNode: TJSONData;
+  LStateNode,LScheduleNode: TJSONData;
+  LSchedule: TSchedule;
+  i,j: Integer;
 begin
-  try
-    with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + Format('?stationId=%s&id=%s',[StationID,NodeID])) do
-      try
-        StateNode := FindPath('data.options.sprinkle_state');
-        UpdateDataResp.TurnSprinkleOn := Assigned(StateNode) and (StateNode.AsInteger = 0);
-        Result := UpdateDataResp;
-      finally
-        Free;
-      end
-  except
-    on e: Exception do begin
-      WriteLn(e.Message);
-    end
-  end;
+  with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)])) do
+    try
+      LStateNode := FindPath('data.options.sprinkle.state');
+      if Assigned(LStateNode) then
+        Result.Sprinkle.State := LStateNode.AsInteger;
+
+      LStateNode := FindPath('data.options.suhu.state');
+      if Assigned(LStateNode) then
+        Result.Temperature.State := LStateNode.AsInteger;
+
+      LStateNode := FindPath('data.options.suhu.value');
+      if Assigned(LStateNode) then
+        Result.Temperature.Value := LStateNode.AsInteger;
+
+      LStateNode := FindPath('data.options.kelembaban.state');
+      if Assigned(LStateNode) then
+        Result.Humidity.State := LStateNode.AsInteger;
+
+      LStateNode := FindPath('data.options.kelembaban.value');
+      if Assigned(LStateNode) then
+        Result.Humidity.Value := LStateNode.AsInteger;
+
+      LStateNode := FindPath('data.schedules');
+      if Assigned(LStateNode) then begin
+        for i := 0 to LStateNode.Count - 1 do begin
+          LScheduleNode := LStateNode.Items[i];
+
+          // safe values for invalid schedule
+          LSchedule.Type_ := -1;
+          LSchedule.Mode := -1;
+
+          LStateNode := LScheduleNode.FindPath('type');
+          if Assigned(LStateNode) then
+            LSchedule.Type_ := LStateNode.AsInteger;
+
+          LStateNode := LScheduleNode.FindPath('mode');
+          if Assigned(LStateNode) then
+            LSchedule.Mode := LStateNode.AsInteger;
+
+          LStateNode := LScheduleNode.FindPath('active');
+          if Assigned(LStateNode) then
+            LSchedule.IsActive := LStateNode.AsInteger = 1;
+
+          LStateNode := LScheduleNode.FindPath('value');
+          if Assigned(LStateNode) then
+            LSchedule.Value := LStateNode.AsString;
+
+          LStateNode := LScheduleNode.FindPath('days');
+          if Assigned(LStateNode) then
+            for j := 0 to LStateNode.Count - 1 do
+              Include(LSchedule.Days,LStateNode.Items[j].AsInteger);
+
+          SetLength(Result.Schedules,Length(Result.Schedules) + 1);
+          Result.Schedules[High(Result.Schedules)] := LSchedule;
+        end;
+      end;
+    finally
+      Free;
+    end;
 end;
 
 procedure UpdateEnvCondData(const ATemperature: Double; AHumidity: Integer; const AIsSprinkleOn: Boolean);
 var
+  AIsSprinkleOnIntVal: Integer;
   OptionsJSON: String;
 begin
-  try
-    OptionsJSON := Format('{"suhu":%02f,"kelembaban":%d}',[ATemperature,AHumidity]);
-    GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),Format('id=%s&options=%s',[EncodeURLElement(NodeID),EncodeURLElement(OptionsJSON)]));
-  except
-    on e: Exception do begin
-      WriteLn(e.Message);
-    end;
-  end;
+  if AIsSprinkleOn then AIsSprinkleOnIntVal := 0 else AIsSprinkleOnIntVal := 1;
+  OptionsJSON := Format('{"suhu":{"value":%02f,"state":0"},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
+  GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),URLEncodeParams([KVP('id',NodeID),KVP('options',OptionsJSON)]));
 end;
-
-initialization
-  UpdateDataResp.ScheduleSprinkleRequestMap := TScheduleSprinkleRequestMap.Create;
-
-finalization
-  UpdateDataResp.ScheduleSprinkleRequestMap.Free;
 
 end.

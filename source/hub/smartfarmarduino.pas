@@ -1,4 +1,4 @@
-unit SmartFarmArduinode;
+unit SmartFarmArduino;
 
 {$mode objfpc}{$H+}
 
@@ -17,6 +17,7 @@ type
   end;
 
 var
+  DeviceID,
   GetTemperatureURL,
   GetHumidityURL,
   TurnSprinkleOnURL,
@@ -36,59 +37,68 @@ uses
 function GetUpdateData: TUpdateData;
 var
   LStateNode: TJSONData;
+  Continue: Boolean;
 begin
-  try
+  Continue := true;
+  repeat
     with GetJSONResponse(hmGET, GetTemperatureURL) do
       try
-        LStateNode := FindPath('data.nilai');
-        if Assigned(LStateNode) then Result.Temperature := LStateNode.AsFloat;
+        LStateNode := FindPath('param');
+        if Assigned(LStateNode) and (LStateNode.AsString = 'module=suhu') then begin
+          LStateNode := FindPath('data.nilai');
+          if Assigned(LStateNode) then Result.Temperature := LStateNode.AsFloat;
+          Continue := false;
+        end;
       finally
         Free;
       end;
+  until not Continue;
 
+  Continue := true;
+  repeat
     with GetJSONResponse(hmGET, GetHumidityURL) do
       try
-        LStateNode := FindPath('data.nilai');
-        if Assigned(LStateNode) then Result.Humidity := LStateNode.AsInteger;
+        LStateNode := FindPath('param');
+        if Assigned(LStateNode) and (LStateNode.AsString = 'module=kelembaban') then begin
+          LStateNode := FindPath('data.nilai');
+          if Assigned(LStateNode) then Result.Humidity := LStateNode.AsInteger;
+          Continue := false;
+        end;
       finally
         Free;
       end;
+  until not Continue;
 
+  Continue := true;
+  repeat
     with GetJSONResponse(hmGET, GetSprinkleStatusURL) do
       try
-        LStateNode := FindPath('data.status');
-        Result.IsSprinkleOn := Assigned(LStateNode) and (LStateNode.AsString = 'nyala');
+        LStateNode := FindPath('param');
+        if Assigned(LStateNode) and (LStateNode.AsString = 'module=status-kran') then begin
+          LStateNode := FindPath('data.status');
+          Result.IsSprinkleOn := Assigned(LStateNode) and (LStateNode.AsString = 'nyala');
+          Continue := false;
+        end;
       finally
         Free;
       end;
-  except
-    on e: Exception do begin
-      WriteLn(e.Message);
-    end
-  end;
+  until not Continue;
 end;
 
 procedure ToggleSprinkle(const AIsOn: Boolean);
 var
   LURL: String;
-  LResponseBody: String;
 begin
-  try
-    if AIsOn then
-      LURL := TurnSprinkleOnURL
-    else
-      LURL := TurnSprinkleOffURL;
-    with GetJSONResponse(hmGET, LURL) do
-      try
-        // cek gagal atau berhasil?
-      finally
-        Free;
-      end
-  except
-    on e: Exception do begin
-      WriteLn(e.Message);
+  if AIsOn then
+    LURL := TurnSprinkleOnURL
+  else
+    LURL := TurnSprinkleOffURL;
+  with GetJSONResponse(hmGET, LURL) do
+    try
+      // cek gagal atau berhasil?
+    finally
+      Free;
     end;
-  end;
 end;
 
 type

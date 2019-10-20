@@ -5,51 +5,105 @@ program SmartFarmHub;
 uses
   cthreads,
   SysUtils,
+  DateUtils,
+  ssockets,
+  fphttpclient,
   IniFiles,
   SmartFarmServer,
-  SmartFarmArduiNode;
+  SmartFarmArduino;
 
+procedure DumpExceptionCallStack(E: Exception);
+var
+  I: Integer;
+  Frames: PPointer;
+begin
+  if E <> nil then begin
+    WriteLn(StdErr,E.ClassName + ': ' + E.Message);
+  end;
+  WriteLn(BackTraceStrFunc(ExceptAddr));
+  Frames := ExceptFrames;
+  for I := 0 to ExceptFrameCount - 1 do
+    WriteLn(BackTraceStrFunc(Frames[I]));
+end;
+
+procedure ReadAndPopulateConfig;
 var
   Config: TIniFile;
-  ServerUpdateData: SmartFarmServer.TUpdateData;
-  NodeUpdateData: SmartFarmArduiNode.TUpdateData;
-  RestingTimeMS: Integer;
-  ScheduleSprinkleRequestMap: TScheduleSprinkleRequestMap;
-  ScheduleSprinkleRequest: TScheduleSprinkleRequest;
 begin
   Config := TIniFile.Create('config.ini');
   try
-    SmartFarmServer.StationID := Config.ReadString('Config','SmartFarmServerStationID','');
-    SmartFarmServer.NodeID := Config.ReadString('Config','SmartFarmServerNodeID','');
-    SmartFarmServer.GetUpdateURL := Config.ReadString('Config','SmartFarmServerGetUpdateURL','');
-    SmartFarmServer.PostUpdateURL := Config.ReadString('Config','SmartFarmServerPostUpdateURL','');
-    SmartFarmArduiNode.GetTemperatureURL := Config.ReadString('Config','SmartFarmArduiNodeGetTemperatureURL','');
-    SmartFarmArduiNode.GetHumidityURL := Config.ReadString('Config','SmartFarmArduiNodeGetHumidityURL','');
-    SmartFarmArduiNode.TurnSprinkleOnURL := Config.ReadString('Config','SmartFarmArduiNodeTurnSprinkleOnURL','');
-    SmartFarmArduiNode.TurnSprinkleOffURL := Config.ReadString('Config','SmartFarmArduiNodeTurnSprinkleOffURL','');
-    SmartFarmArduiNode.GetSprinkleStatusURL := Config.ReadString('Config','SmartFarmArduiNodeGetSprinkleStatusURL','');
-    RestingTimeMS := Config.ReadInteger('Config','RestingTimeMS',10);
+    SmartFarmServer.StationID := Config.ReadString('Server','StationID','');
+    SmartFarmServer.GetUpdateURL := Config.ReadString('Server','GetUpdateURL','');
+    SmartFarmServer.PostUpdateURL := Config.ReadString('Server','PostUpdateURL','');
 
-    while true do begin
-      NodeUpdateData := SmartFarmArduiNode.GetUpdateData;
-      SmartFarmServer.UpdateEnvCondData(NodeUpdateData.Temperature,NodeUpdateData.Humidity,NodeUpdateData.IsSprinkleOn);
-      WriteLn(Format('Temp = %02f, Hum = %d, SplOn = %s',[NodeUpdateData.Temperature,NodeUpdateData.Humidity,BoolToStr(NodeUpdateData.IsSprinkleOn)]));
+    SmartFarmServer.NodeID := Config.ReadString('RaspberryPi','NodeID','');
 
-      ServerUpdateData := SmartFarmServer.GetUpdateData;
-
-      // Kirim request buka kran kalau belum nyala
-      // if not IsSprinkleOn and ServerUpdateData.TurnSprinkleOn then SmartFarmArduiNode.ToggleSprinkle(true);
-      // Kirim request tutup kran kalau belum mati
-      // if IsSprinkleOn and not ServerUpdateData.TurnSprinkleOn then SmartFarmArduiNode.ToggleSprinkle(false);
-
-      // ScheduleSprinkleRequestMap := ServerUpdateData.ScheduleSprinkleRequestMap;
-      // for ScheduleSprinkleRequest in ScheduleSprinkleRequestMap do begin
-      //   WriteLn(ScheduleSprinkleRequest.Key,' ',ScheduleSprinkleRequest.Value);
-      // end;
-
-      Sleep(RestingTimeMS);
-    end;
+    SmartFarmArduino.GetTemperatureURL := Config.ReadString('Arduino','GetTemperatureURL','');
+    SmartFarmArduino.GetHumidityURL := Config.ReadString('Arduino','GetHumidityURL','');
+    SmartFarmArduino.TurnSprinkleOnURL := Config.ReadString('Arduino','TurnSprinkleOnURL','');
+    SmartFarmArduino.TurnSprinkleOffURL := Config.ReadString('Arduino','TurnSprinkleOffURL','');
+    SmartFarmArduino.GetSprinkleStatusURL := Config.ReadString('Arduino','GetSprinkleStatusURL','');
   finally
     Config.Free;
+  end;
+end;
+
+type
+  TSprinkleState = (ssKeep,ssOff,ssOn);
+
+function GetNextSprinkleState(const AServerUpdateData: SmartFarmServer.TUpdateData; const AArduinoUpdateData: SmartFarmArduino.TUpdateData): TSprinkleState;
+var
+  LSchedule: TSchedule;
+begin
+  Result := ssKeep;
+
+  // manual springkle state change request
+  if not AArduinoUpdateData.IsSprinkleOn and (AServerUpdateData.Sprinkle.State = 0) then Result := ssOn;
+  if     AArduinoUpdateData.IsSprinkleOn and (AServerUpdateData.Sprinkle.State = 1) then Result := ssOff;
+
+  // handle schedules only when there's no manual request
+  if Result = ssKeep then begin
+    for LSchedule in AServerUpdateData.Schedules do
+      if LSchedule.IsActive then begin
+        // turn sprinkle on automatically...
+
+        // if humidity reaches or drops below this point
+        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) and (AArduinoUpdateData.Humidity <= StrToIntDef(LSchedule.Value,0))  then Result := ssOn;
+        // if temperature reaches or drops below this point
+        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1) and (AArduinoUpdateData.Temperature <= StrToIntDef(LSchedule.Value,0)) then Result := ssOn;
+        // if daily schedule and time matches now
+        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 0)
+          and (Byte(DayOfTheWeek(Now) - 1) in LSchedule.Days)
+          and (Format('%02d:%02d',[HourOfTheDay(Now),MinuteOfTheDay(Now)]) = LSchedule.Value)
+        then Result := ssOn;
+        // if one time schedule matches now
+        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) and (SecondsBetween(Now,StrToDateTime(LSchedule.Value)) < 60) then Result := ssOn;
+      end;
+  end;
+end;
+
+var
+  ServerUpdateData: SmartFarmServer.TUpdateData;
+  ArduinoUpdateData: SmartFarmArduino.TUpdateData;
+begin
+  ReadAndPopulateConfig;
+  while true do begin
+    try
+      ArduinoUpdateData := SmartFarmArduino.GetUpdateData;
+      ServerUpdateData := SmartFarmServer.GetUpdateData;
+
+      case GetNextSprinkleState(ServerUpdateData, ArduinoUpdateData) of
+        ssOn : SmartFarmArduino.ToggleSprinkle(true);
+        ssOff: SmartFarmArduino.ToggleSprinkle(false);
+        ssKeep: ; // intentionally do nothing
+      end;
+
+      SmartFarmServer.UpdateEnvCondData(ArduinoUpdateData.Temperature,ArduinoUpdateData.Humidity,ArduinoUpdateData.IsSprinkleOn);
+    except
+      on e: ESocketError do
+        DumpExceptionCallStack(e);
+      on e: EHTTPClient do
+        DumpExceptionCallStack(e);
+    end;
   end;
 end.
