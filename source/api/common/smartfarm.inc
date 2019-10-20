@@ -9,6 +9,7 @@ const
   ERR_FARM_NOT_FOUND = 'Farm not found';
   ERR_STATION_NOT_FOUND = 'Station not found';
   ERR_STATION_SCHEDULE_FAILED = 'Failed save schedule';
+  ERR_HISTORY_EMPTY = 'History empty or node not found.';
 
   ERR_AUTH_INVALID = 'Invalid username or password';
   ERR_AUTH_UNAUTHORIZED = 'Unauthorized access';

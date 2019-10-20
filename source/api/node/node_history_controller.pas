@@ -92,10 +92,8 @@ begin
   if not nodeHistory.Find(whereAsArray, 'date desc', limitQuery) then
   begin
     nodeHistory.Free;
-    OutputJson(404, ERR_NODE_NOT_FOUND);
+    OutputJson(404, ERR_HISTORY_EMPTY);
   end;
-
-  //die(nodeHistory.SQL.Text);
 
   historyAsArray := TJSONArray.Create;
   if not DataToJSON(nodeHistory.Data, historyAsArray, False) then
@@ -123,7 +121,7 @@ begin
           deviceOptionAsJson := GetJSON(nodeOptions);
 
           // get average temperature
-          s := jsonGetData(deviceOptionAsJson, TEMPERATURE_KEY + '/value');
+          s := jsonGetData(deviceOptionAsJson, 'devices/' + TEMPERATURE_KEY + '/value');
           if not s.IsEmpty then
           begin
             temperatureAverage:= temperatureAverage + s2f(s);
@@ -131,7 +129,7 @@ begin
           end;
 
           // get humidity temperature
-          s := jsonGetData(deviceOptionAsJson, HUMIDITY_KEY + '/value');
+          s := jsonGetData(deviceOptionAsJson, 'devices/' + HUMIDITY_KEY + '/value');
           if not s.IsEmpty then
           begin
             humidityAverage:= humidityAverage + s2f(s);
@@ -146,8 +144,10 @@ begin
 
   end;
 
-  temperatureAverage := temperatureAverage / temperatureCount;
-  humidityAverage := humidityAverage / humidityCount;
+  if temperatureAverage > 0 then
+    temperatureAverage := temperatureAverage / temperatureCount;
+  if humidityAverage > 0 then
+    humidityAverage := humidityAverage / humidityCount;
 
   json := TJSONUtil.Create;
   json['code'] := 0;

@@ -200,8 +200,8 @@ begin
     if IsJsonValid(deviceOptions) then
     begin
       deviceOptionsAsJson := TJSONObject( GetJSON(deviceOptions));
-      temperatureUpdate := s2f(jsonGetData(deviceOptionsAsJson, TEMPERATURE_KEY + '/value'));
-      humadityUpdate := s2f(jsonGetData(deviceOptionsAsJson, HUMIDITY_KEY + '/value'));
+      temperatureUpdate := s2f(jsonGetData(deviceOptionsAsJson, 'devices/' + TEMPERATURE_KEY + '/value'));
+      humadityUpdate := s2f(jsonGetData(deviceOptionsAsJson, 'devices/' + HUMIDITY_KEY + '/value'));
 
       // set temperature average
       if temperatureUpdate > 0 then

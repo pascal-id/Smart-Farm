@@ -56,23 +56,23 @@ var
 begin
   with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)])) do
     try
-      LStateNode := FindPath('data.options.sprinkle.state');
+      LStateNode := FindPath('data.options.device.sprinkle.state');
       if Assigned(LStateNode) then
         Result.Sprinkle.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.suhu.state');
+      LStateNode := FindPath('data.options.device.suhu.state');
       if Assigned(LStateNode) then
         Result.Temperature.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.suhu.value');
+      LStateNode := FindPath('data.options.device.suhu.value');
       if Assigned(LStateNode) then
         Result.Temperature.Value := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.kelembaban.state');
+      LStateNode := FindPath('data.options.device.kelembaban.state');
       if Assigned(LStateNode) then
         Result.Humidity.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.kelembaban.value');
+      LStateNode := FindPath('data.options.device.kelembaban.value');
       if Assigned(LStateNode) then
         Result.Humidity.Value := LStateNode.AsInteger;
 
