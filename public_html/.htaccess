@@ -26,7 +26,7 @@ RewriteRule ^(stations|station)/(.*)$ station.bin/$2 [QSA,L]
 RewriteRule ^(nodes|node)/(.*)$ node.bin/$2 [QSA,L]
 RewriteRule ^(schedules|schedule)/(.*)$ schedule.bin/$2 [QSA,L]
 RewriteRule ^(issues|issue)/(.*)$ issue.bin/$2 [QSA,L]
-
+RewriteRule ^(stats)/(.*)$ stats.bin/$2 [QSA,L]
 
 
 RewriteCond %{REQUEST_FILENAME} -d [OR]

@@ -4,7 +4,7 @@ unit station_controller;
   USAGE:
 
   [x] Get Station Info
-  curl "smartfarm.pascal-id.test/station/?userId=tgr123&id=qsw345sxP"
+  curl "smartfarm.pascal-id.test/station/?id=tgr123"
 
 }
 

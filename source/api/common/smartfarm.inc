@@ -10,5 +10,4 @@ const
   ERR_STATION_SCHEDULE_FAILED = 'Failed save schedule';
 
   INFO_DEVICE_CHECKID = 'Check your device ID';
-  OK = 'OK';
 

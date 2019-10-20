@@ -6,6 +6,8 @@ unit node_controller;
   curl "smartfarm.pascal-id.test/node/?stationId=tgr123&id=qsw345sxP"
 
   [x] Set Device Info
+  curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&value=3'
+
   curl -X POST "smartfarm.pascal-id.test/node/" \
     -d 'id=qsw345sxP&state=1&value=3&options={"suhu":34,"kelembaban":45,"time":{"08:30": 5000,"16:00": 10000}}'
 
@@ -180,7 +182,7 @@ begin
     OutputJson(404, ERR_NODE_NOT_FOUND);
   end;
 
-  sDid := device['did'];
+  sDid := device['nid'];
 
   sMessage := INFO_DEVICE_CHECKID;
   if not deviceState.IsEmpty then
@@ -214,7 +216,7 @@ begin
     history := TNodeHistoryModel.Create;
     history['date'] := Now.Format();
     history['slug'] := FID;
-    history['devices_id'] := sDID;
+    history['node_id'] := sDID;
     history['status_id'] := 0;
     if not deviceState.IsEmpty then
       history['state'] := deviceState;
