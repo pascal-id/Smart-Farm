@@ -142,6 +142,13 @@ begin
     Free;
   end;
 
+  //TODO: for test only, remove it
+  if not authToken.IsEmpty then
+  begin
+    json['auth/token'] := authToken;
+    json['auth/slug'] := authSlug;
+  end;
+
   Response.Content := json.AsJSON;
   json.Free;
 end;

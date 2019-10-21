@@ -83,7 +83,7 @@ Set value:
 
 ```
 
-Example result (depend on vendor):
+Example result:
 
 ```bash
 {"code":200,"msg":"OK"}
