@@ -149,7 +149,7 @@ end;
 // POST Method Handler
 procedure TNodeModule.Post;
 var
-  i: integer;
+  i, stationId: integer;
   sKey, sDid, sMessage: string;
   device: TNodeModel;
   history: TNodeHistoryModel;
@@ -188,6 +188,7 @@ begin
   end;
 
   sDid := device['nid'];
+  stationId := device['station_id'];
 
   sMessage := INFO_DEVICE_CHECKID;
   if not deviceState.IsEmpty then
@@ -252,6 +253,7 @@ begin
     history['date'] := Now.Format();
     history['slug'] := FID;
     history['node_id'] := sDID;
+    history['station_id'] := stationId;
     history['activity'] := activity;
     history['description'] := description;
     history['status_id'] := 0;

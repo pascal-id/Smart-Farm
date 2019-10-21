@@ -89,6 +89,7 @@ begin
   if limitQuery = 0 then
     whereAsArray.Add('date >= CURDATE()');
   nodeHistory.AddJoin('nodes', 'nid', 'node_id', ['name']);
+  nodeHistory.AddJoin('stations', 'sid', 'node_history.station_id', ['slug station_slug', 'name station_name']);
   if not nodeHistory.Find(whereAsArray, 'date desc', limitQuery) then
   begin
     nodeHistory.Free;
