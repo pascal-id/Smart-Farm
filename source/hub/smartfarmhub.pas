@@ -54,6 +54,7 @@ type
 function GetNextSprinkleState(const AServerUpdateData: SmartFarmServer.TUpdateData; const AArduinoUpdateData: SmartFarmArduino.TUpdateData): TSprinkleState;
 var
   LSchedule: TSchedule;
+  LScheduleDateTime: TDateTime;
 begin
   Result := ssKeep;
 
@@ -70,14 +71,17 @@ begin
         // if humidity reaches or drops below this point
         if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) and (AArduinoUpdateData.Humidity <= StrToIntDef(LSchedule.Value,0))  then Result := ssOn;
         // if temperature reaches or drops below this point
-        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1) and (AArduinoUpdateData.Temperature <= StrToIntDef(LSchedule.Value,0)) then Result := ssOn;
+        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1) and (AArduinoUpdateData.Temperature >= StrToIntDef(LSchedule.Value,0)) then Result := ssOn;
         // if daily schedule and time matches now
         if (LSchedule.Type_ = 1) and (LSchedule.Mode = 0)
           and (Byte(DayOfTheWeek(Now) - 1) in LSchedule.Days)
           and (Format('%02d:%02d',[HourOfTheDay(Now),MinuteOfTheDay(Now)]) = LSchedule.Value)
         then Result := ssOn;
         // if one time schedule matches now
-        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) and (SecondsBetween(Now,StrToDateTime(LSchedule.Value)) < 60) then Result := ssOn;
+        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) then begin
+          LScheduleDateTime := StrToDateTime(LSchedule.Value);
+          if (Now >= LScheduleDateTime) and (SecondsBetween(Now, LScheduleDateTime) < 60) then Result := ssOn;
+        end;
       end;
   end;
 end;
@@ -99,6 +103,7 @@ begin
       end;
 
       SmartFarmServer.UpdateEnvCondData(ArduinoUpdateData.Temperature,ArduinoUpdateData.Humidity,ArduinoUpdateData.IsSprinkleOn);
+      Sleep(1000);
     except
       on e: ESocketError do
         DumpExceptionCallStack(e);

@@ -54,6 +54,7 @@ var
   LSchedule: TSchedule;
   i,j: Integer;
 begin
+  Result := Default(TUpdateData);
   with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)])) do
     try
       LStateNode := FindPath('data.options.device.sprinkle.state');
