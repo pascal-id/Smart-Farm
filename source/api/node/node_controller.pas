@@ -9,7 +9,7 @@ unit node_controller;
   curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&value=3'
 
   curl -X POST "smartfarm.pascal-id.test/node/" \
-    -d 'id=qsw345sxP&state=1&value=3&options={"suhu":{"state": 0,"value": 30},"kelembaban":{"state": 0,"value": 55},"sprinkler":{"state": 1}}'
+    -d 'id=qsw345sxP&state=1&value=3&options={"devices":{"suhu":{"value":28.75,"state":0},"kelembaban":{"value":888,"state":0},"sprinkle":{"state":1}}}'
 
 }
 {$mode objfpc}{$H+}
@@ -156,12 +156,12 @@ end;
 // POST Method Handler
 procedure TNodeModule.Post;
 var
-  i, stationId: integer;
-  sKey, sDid, sMessage: string;
+  stationId: integer;
+  sDid, sMessage: string;
   device: TNodeModel;
   history: TNodeHistoryModel;
   deviceState, deviceValue, deviceOptions, activity, description: string;
-  deviceOptionsAsJson, existingDeviceOptionsAsJson: TJSONObject;
+  deviceOptionsAsJson: TJSONObject;
   temperatureAverageExisting, humidityAverageExisting,
     temperatureUpdate, humadityUpdate: Double;
 begin
