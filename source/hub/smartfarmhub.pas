@@ -97,13 +97,18 @@ begin
       ServerUpdateData := SmartFarmServer.GetUpdateData;
 
       case GetNextSprinkleState(ServerUpdateData, ArduinoUpdateData) of
-        ssOn : SmartFarmArduino.ToggleSprinkle(true);
-        ssOff: SmartFarmArduino.ToggleSprinkle(false);
+        ssOn : begin
+          SmartFarmArduino.ToggleSprinkle(true);
+          ArduinoUpdateData.IsSprinkleOn := true;
+        end;
+        ssOff: begin
+          SmartFarmArduino.ToggleSprinkle(false);
+          ArduinoUpdateData.IsSprinkleOn := false;
+        end;
         ssKeep: ; // intentionally do nothing
       end;
 
       SmartFarmServer.UpdateEnvCondData(ArduinoUpdateData.Temperature,ArduinoUpdateData.Humidity,ArduinoUpdateData.IsSprinkleOn);
-      Sleep(1000);
     except
       on e: ESocketError do
         DumpExceptionCallStack(e);
