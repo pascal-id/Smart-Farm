@@ -13,6 +13,7 @@ const
 
   ERR_AUTH_INVALID = 'Invalid username or password';
   ERR_AUTH_UNAUTHORIZED = 'Unauthorized access';
+  ERR_AUTH_TOKEN_INVALID = 'Invalid token';
 
   INFO_DEVICE_CHECKID = 'Check your device ID';
   TEMPERATURE_KEY = 'suhu';

@@ -81,11 +81,12 @@ Setiap alat yang mempunyai fungsi penjadwalan otomatis bisa menggunakan data ber
 
 
 
-| Field  | Type | Description |
-|---|---|---|
-| type |  | 0: tipe_0,<br />1: tipe_1  |
-| mode |  | 0: mode_0,<br />1: mode_1  |
-| active |  | 0: active,<br />1: inactive  |
+| Type  | Mode | Description |
+|--|---|---|
+| 0 | 0 | When humidity = x  |
+| 0 | 1 | When Temperature = x  |
+| 1 | 0 | Days  |
+| 1 | 1 | One time  |
 
 
 

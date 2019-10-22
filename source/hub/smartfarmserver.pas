@@ -57,23 +57,23 @@ begin
   Result := Default(TUpdateData);
   with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)])) do
     try
-      LStateNode := FindPath('data.options.device.sprinkle.state');
+      LStateNode := FindPath('data.options.devices.sprinkle.state');
       if Assigned(LStateNode) then
         Result.Sprinkle.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.device.suhu.state');
+      LStateNode := FindPath('data.options.devices.suhu.state');
       if Assigned(LStateNode) then
         Result.Temperature.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.device.suhu.value');
+      LStateNode := FindPath('data.options.devices.suhu.value');
       if Assigned(LStateNode) then
         Result.Temperature.Value := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.device.kelembaban.state');
+      LStateNode := FindPath('data.options.devices.kelembaban.state');
       if Assigned(LStateNode) then
         Result.Humidity.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.device.kelembaban.value');
+      LStateNode := FindPath('data.options.devices.kelembaban.value');
       if Assigned(LStateNode) then
         Result.Humidity.Value := LStateNode.AsInteger;
 
@@ -122,7 +122,7 @@ var
   OptionsJSON: String;
 begin
   if AIsSprinkleOn then AIsSprinkleOnIntVal := 0 else AIsSprinkleOnIntVal := 1;
-  OptionsJSON := Format('{"device":{"suhu":{"value":%02f,"state":0},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
+  OptionsJSON := Format('{"devices":{"suhu":{"value":%02f,"state":0},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
   GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),URLEncodeParams([KVP('id',NodeID),KVP('options',OptionsJSON)]));
 end;
 

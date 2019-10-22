@@ -12,7 +12,7 @@ implementation
 uses auth_controller;
 
 initialization
-  Route[ '/'] := TAuthModule; // Main Module
+  Route[ '/'] := TAuthModule;
 
 end.
 
