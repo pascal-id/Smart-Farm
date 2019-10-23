@@ -78,10 +78,9 @@ begin
   field := _GET['field'];
   limitQuery := s2i(_GET['limit']);
 
-  //TODO: check is related to user or not
-
   DataBaseInit;
   nodeHistory := TNodeHistoryModel.Create;
+  whereAsArray.Add('stations.user_id=' + i2s(authUserId));
   if not FID.IsEmpty then
     whereAsArray.Add('node_history.slug="' + FID + '"');
   if not field.IsEmpty then
@@ -156,6 +155,11 @@ begin
   json['info/temperature_average'] := temperatureAverage;
   json['info/humidity_average'] := humidityAverage;
   json.ValueArray['data'] := historyAsArray;
+  if not authToken.IsEmpty then
+  begin
+    json['auth/slug'] := authSlug;
+    json['auth/time_elapsed'] := authElapsed;
+  end;
   Response.Content := json.AsJSON;
   nodeHistory.Free;
   json.Free;

@@ -74,6 +74,7 @@ begin
     OutputJson(401, ERR_INVALID_PARAMETER);
 
   // Prepare data selection
+  whereAsArray.Add('stations.user_id=' + i2s(authUserId));
   whereAsArray.Add('stations.status_id=0');
   whereAsArray.Add('nodes.status_id=0');
   whereAsArray.Add('stations.slug="' + FStationID + '"');
@@ -122,6 +123,11 @@ begin
     json['code'] := 0;
     json['count'] := schedulesAsJsonArray.Count;
     json.ValueArray['data'] := schedulesAsJsonArray;
+    if not authToken.IsEmpty then
+    begin
+      json['auth/slug'] := authSlug;
+      json['auth/time_elapsed'] := authElapsed;
+    end;
     Free;
   end;
 
@@ -154,7 +160,9 @@ begin
 
   DataBaseInit();
   node := TNodeModel.Create();
-  if not node.Find(['slug="' + FNodeID + '"']) then
+
+  //node.AddJoin('stations', 'sid', 'nodes.station_id', ['name station_name']);
+  if not node.Find(['nodes.slug="' + FNodeID + '"','station_id='+i2s(authUserId)]) then
   begin
     OutputJson(404, ERR_NODE_NOT_FOUND);
   end;

@@ -21,6 +21,7 @@ type
     FExpiredDate: TDateTime;
     FSlug: string;
     FToken: string;
+    FUserID: Integer;
   public
     constructor Create(const DefaultTableName: string = '');
 
@@ -31,12 +32,15 @@ type
     property Token: string read FToken;
     property Slug: string read FSlug;
     property Email: string read FEmail;
+    property UserID: Integer read FUserID;
     property ExpiredDate: TDateTime read FExpiredDate;
   end;
 
 function isAuthenticated: boolean;
 
 var
+  authUserId, authElapsed: Integer;
+  authExpired: TDateTime;
   authToken, authSlug: String;
 
 implementation
@@ -83,6 +87,7 @@ begin
     Exit;
   end;
 
+  FUserID := userArray.Items[0].Items[0].AsInteger;
   FSlug := userArray.Items[0].Items[1].AsString;
   FEmail := userArray.Items[0].Items[2].AsString;
   userArray.Free;
@@ -101,6 +106,7 @@ begin
   FExpiredDate := Value['expired'];
   FEmail := Value['email'];
   FSlug := Value['username'];
+  FUserID := Value['user_id'];
   Result := True;
 end;
 
@@ -108,7 +114,7 @@ function isAuthenticated: boolean;
 var
   clientID: string;
 begin
-  Result := True; //TODO: make it False
+  Result := False; //TODO: make it False
   clientID := GetEnvironmentVariable('client-id');
   authToken := GetEnvironmentVariable('Token');
 
@@ -126,6 +132,9 @@ begin
     end;
 
     authSlug := FSlug;
+    authUserId := FUserID;
+    authExpired := FExpiredDate;
+    authElapsed := Now.SecondsDiff(FExpiredDate);
     Free;
   end;
 

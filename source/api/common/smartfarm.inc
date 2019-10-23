@@ -6,6 +6,7 @@ const
   ERR_DATA_NOT_FOUND = 'Data not found';
   ERR_NODE_NOT_FOUND = 'Node not found.';
   ERR_NOT_PERMITTED = 'Not Permitted';
+  ERR_NOT_PERMITTED_OR_TOKEN_EXPIRED = 'Not Permitted or token expired.';
   ERR_FARM_NOT_FOUND = 'Farm not found';
   ERR_STATION_NOT_FOUND = 'Station not found';
   ERR_STATION_SCHEDULE_FAILED = 'Failed save schedule';
