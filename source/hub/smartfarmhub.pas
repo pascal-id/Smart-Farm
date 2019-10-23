@@ -54,6 +54,7 @@ type
 function GetNextSprinkleState(const AServerUpdateData: SmartFarmServer.TUpdateData; const AArduinoUpdateData: SmartFarmArduino.TUpdateData): TSprinkleState;
 var
   LSchedule: TSchedule;
+  LScheduleValue: Integer;
   LScheduleDateTime: TDateTime;
 begin
   Result := ssKeep;
@@ -66,21 +67,32 @@ begin
   if Result = ssKeep then begin
     for LSchedule in AServerUpdateData.Schedules do
       if LSchedule.IsActive then begin
-        // turn sprinkle on automatically...
+        // type: 0 & mode: 0 => trigger by humidity
+        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) then begin
+          LScheduleValue := StrToIntDef(LSchedule.Value,0);
+          if (AArduinoUpdateData.Humidity <= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
+          else if (AArduinoUpdateData.Humidity > LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
+        end;
 
-        // if humidity reaches or drops below this point
-        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) and (AArduinoUpdateData.Humidity <= StrToIntDef(LSchedule.Value,0))  then Result := ssOn;
-        // if temperature reaches or drops below this point
-        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1) and (AArduinoUpdateData.Temperature >= StrToIntDef(LSchedule.Value,0)) then Result := ssOn;
-        // if daily schedule and time matches now
+        // type: 0 & mode: 1 => trigger by temperature
+        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1)  then begin
+          LScheduleValue := StrToIntDef(LSchedule.Value,0);
+          if (AArduinoUpdateData.Temperature >= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
+          else if (AArduinoUpdateData.Temperature < LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
+        end;
+
+        // type: 1 & mode: 0 => trigger by daily schedule
         if (LSchedule.Type_ = 1) and (LSchedule.Mode = 0)
           and (Byte(DayOfTheWeek(Now) - 1) in LSchedule.Days)
           and (Format('%02d:%02d',[HourOfTheDay(Now),MinuteOfTheDay(Now)]) = LSchedule.Value)
-        then Result := ssOn;
-        // if one time schedule matches now
+          and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
+        else if AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
+
+        // type: 1 & mode: 1 => trigger by one time schedule
         if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) then begin
           LScheduleDateTime := StrToDateTime(LSchedule.Value);
-          if (Now >= LScheduleDateTime) and (SecondsBetween(Now, LScheduleDateTime) < 60) then Result := ssOn;
+          if (Now >= LScheduleDateTime) and (SecondsBetween(Now, LScheduleDateTime) < 60)and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
+          else if AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
         end;
       end;
   end;
