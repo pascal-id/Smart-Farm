@@ -50,70 +50,42 @@ uses
 
 function GetUpdateData: TUpdateData;
 var
-  LStateNode,LScheduleNode: TJSONData;
+  LRootNode,LStateNode,LScheduleNode: TJSONData;
   LSchedule: TSchedule;
   i,j: Integer;
 begin
   Result := Default(TUpdateData);
-  with GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)])) do
-    try
-      LStateNode := FindPath('data.options.devices.sprinkle.state');
-      if Assigned(LStateNode) then
-        Result.Sprinkle.State := LStateNode.AsInteger;
 
-      LStateNode := FindPath('data.options.devices.suhu.state');
-      if Assigned(LStateNode) then
-        Result.Temperature.State := LStateNode.AsInteger;
+  LRootNode := GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)]));
+  try
+    Result.Sprinkle.State    := NodeValueToIntDef(LRootNode,'data[0].options.devices.sprinkle.state',-1);
+    Result.Temperature.State := NodeValueToIntDef(LRootNode,'data[0].options.devices.suhu.state',-1);
+    Result.Temperature.Value := NodeValueToIntDef(LRootNode,'data[0].options.devices.suhu.value',-1);
+    Result.Humidity.State    := NodeValueToIntDef(LRootNode,'data[0].options.devices.kelembaban.state',-1);
+    Result.Humidity.Value    := NodeValueToIntDef(LRootNode,'data[0].options.devices.kelembaban.value',-1);
 
-      LStateNode := FindPath('data.options.devices.suhu.value');
-      if Assigned(LStateNode) then
-        Result.Temperature.Value := LStateNode.AsInteger;
+    LStateNode := LRootNode.FindPath('data[0].schedules');
+    if Assigned(LStateNode) then begin
+      for i := 0 to LStateNode.Count - 1 do begin
+        LScheduleNode := LStateNode.Items[i];
 
-      LStateNode := FindPath('data.options.devices.kelembaban.state');
-      if Assigned(LStateNode) then
-        Result.Humidity.State := LStateNode.AsInteger;
+        LSchedule.Type_    := NodeValueToIntDef(LScheduleNode,'type',-1);
+        LSchedule.Mode     := NodeValueToIntDef(LScheduleNode,'mode',-1);
+        LSchedule.IsActive := NodeValueToIntDef(LScheduleNode,'active',-1) = 1;
+        LSchedule.Value    := NodeValueToStrDef(LScheduleNode,'value','');
 
-      LStateNode := FindPath('data.options.devices.kelembaban.value');
-      if Assigned(LStateNode) then
-        Result.Humidity.Value := LStateNode.AsInteger;
+        LStateNode := LScheduleNode.FindPath('days');
+        if Assigned(LStateNode) then
+          for j := 0 to LStateNode.Count - 1 do
+            Include(LSchedule.Days,LStateNode.Items[j].AsInteger);
 
-      LStateNode := FindPath('data.schedules');
-      if Assigned(LStateNode) then begin
-        for i := 0 to LStateNode.Count - 1 do begin
-          LScheduleNode := LStateNode.Items[i];
-
-          // safe values for invalid schedule
-          LSchedule.Type_ := -1;
-          LSchedule.Mode := -1;
-
-          LStateNode := LScheduleNode.FindPath('type');
-          if Assigned(LStateNode) then
-            LSchedule.Type_ := LStateNode.AsInteger;
-
-          LStateNode := LScheduleNode.FindPath('mode');
-          if Assigned(LStateNode) then
-            LSchedule.Mode := LStateNode.AsInteger;
-
-          LStateNode := LScheduleNode.FindPath('active');
-          if Assigned(LStateNode) then
-            LSchedule.IsActive := LStateNode.AsInteger = 1;
-
-          LStateNode := LScheduleNode.FindPath('value');
-          if Assigned(LStateNode) then
-            LSchedule.Value := LStateNode.AsString;
-
-          LStateNode := LScheduleNode.FindPath('days');
-          if Assigned(LStateNode) then
-            for j := 0 to LStateNode.Count - 1 do
-              Include(LSchedule.Days,LStateNode.Items[j].AsInteger);
-
-          SetLength(Result.Schedules,Length(Result.Schedules) + 1);
-          Result.Schedules[High(Result.Schedules)] := LSchedule;
-        end;
+        SetLength(Result.Schedules,Length(Result.Schedules) + 1);
+        Result.Schedules[High(Result.Schedules)] := LSchedule;
       end;
-    finally
-      Free;
     end;
+  finally
+    LRootNode.Free;
+  end;
 end;
 
 procedure UpdateEnvCondData(const ATemperature: Double; AHumidity: Integer; const AIsSprinkleOn: Boolean);

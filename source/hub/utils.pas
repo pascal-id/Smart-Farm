@@ -21,6 +21,8 @@ function KVP(const AKey,AValue: String): TKeyValuePair; inline;
 function URLEncodeParams(const AParams: array of TKeyValuePair): String;
 // ABody is for POST only and must be URL encoded (use KeyValuePair + URLEncodeParams above to make one)!!!
 function GetJSONResponse(const AMethod: THTTPMethod; const AURL: String; const ABody: String = ''): TJSONData;
+function NodeValueToIntDef(const AJSONData: TJSONData; const APath: String; const ADefault: Integer): Integer;
+function NodeValueToStrDef(const AJSONData: TJSONData; const APath: String; const ADefault: String): String;
 
 implementation
 
@@ -70,6 +72,28 @@ begin
   finally
     if not Assigned(Result) then Result := TJSONObject.Create;
   end;
+end;
+
+function NodeValueToIntDef(const AJSONData: TJSONData; const APath: String; const ADefault: Integer): Integer;
+var
+  LNode: TJSONData;
+begin
+  LNode := AJSONData.FindPath(APath);
+  if (Assigned(LNode)) then
+    Result := LNode.AsInteger
+  else
+    Result := ADefault;
+end;
+
+function NodeValueToStrDef(const AJSONData: TJSONData; const APath: String; const ADefault: String): String;
+var
+  LNode: TJSONData;
+begin
+  LNode := AJSONData.FindPath(APath);
+  if (Assigned(LNode)) then
+    Result := LNode.AsString
+  else
+    Result := ADefault;
 end;
 
 end.
