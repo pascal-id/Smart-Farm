@@ -76,6 +76,7 @@ begin
   end;
 
   // Prepare data selection
+  whereAsArray.Add('stations.user_id=' + i2s(authUserId));
   whereAsArray.Add('stations.status_id=0');
   whereAsArray.Add('nodes.status_id=0');
   whereAsArray.Add('stations.slug="' + FStationID + '"');
@@ -145,8 +146,9 @@ begin
   //TODO: for test only, remove it
   if not authToken.IsEmpty then
   begin
-    json['auth/token'] := authToken;
+    json['auth/token'] := authToken; //todo: remove
     json['auth/slug'] := authSlug;
+    json['auth/time_elapsed'] := authElapsed;
   end;
 
   Response.Content := json.AsJSON;

@@ -88,7 +88,8 @@ begin
     #10'issues.type_id type, issues.level_id level, issues.description ' +
     #10'FROM issues' + #10'JOIN stations s ON issues.station_id=s.sid AND s.status_id=0 AND s.slug="' + FStationID + '"' +
     #10'JOIN nodes n ON issues.node_id=n.nid AND n.status_id=0' + nodeWhere +
-    #10'WHERE issues.status_id=0 ORDER BY issues.date DESC' +
+    #10'WHERE issues.status_id=0 AND n.station_id=' + i2s(authUserId) +
+    #10'ORDER BY issues.date DESC' +
     #10'LIMIT ' + i2s(limitIssue);
 
   issueArray := TJSONArray.Create;
@@ -131,7 +132,7 @@ begin
   DataBaseInit();
 
   station := TStationModel.Create();
-  if not station.Find(['slug="' + FStationID + '"']) then
+  if not station.Find(['slug="' + FStationID + '"', 'user_id='+i2s(authUserId)]) then
   begin
     station.Free;
     OutputJson(404, ERR_STATION_NOT_FOUND);

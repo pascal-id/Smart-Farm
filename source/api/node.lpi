@@ -23,13 +23,16 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="fastplaz_extras"/>
       </Item1>
       <Item2>
-        <PackageName Value="fastplaz_runtime"/>
+        <PackageName Value="LCL"/>
       </Item2>
+      <Item3>
+        <PackageName Value="fastplaz_runtime"/>
+      </Item3>
     </RequiredPackages>
     <Units Count="7">
       <Unit0>
@@ -69,7 +72,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="routes;device;common/models;node;../../../vendors/fastplaz/FastPlaz/src/vendor/dcrypt"/>
+      <OtherUnitFiles Value="routes;common/models;node"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Other>

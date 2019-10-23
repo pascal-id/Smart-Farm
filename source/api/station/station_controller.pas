@@ -51,7 +51,7 @@ procedure TStationModule.BeforeRequestHandler(Sender: TObject; ARequest: TReques
 begin
   Response.ContentType := 'application/json';
   if not isAuthenticated then
-    OutputJson(401, ERR_NOT_PERMITTED);
+    OutputJson(401, ERR_NOT_PERMITTED_OR_TOKEN_EXPIRED);
 end;
 
 // GET Method Handler
@@ -69,7 +69,8 @@ begin
 
   // Example with Direct Query
   fieldsName := 'slug, name';
-  queryToSelectUser := 'SELECT ' + fieldsName + ' FROM stations WHERE status_id=0';
+  queryToSelectUser := 'SELECT %fieldName% FROM stations WHERE status_id=0 AND user_id=' + i2s(authUserId);
+  queryToSelectUser := queryToSelectUser.Replace('%fieldName%', fieldsName);
   if not FID.IsEmpty then
     queryToSelectUser := queryToSelectUser + #10'AND slug="' + FID + '"';
 
@@ -84,6 +85,11 @@ begin
   json['count'] := userArray.Count;
   json['fieldName'] := fieldsName;
   json.ValueArray['data'] := userArray;
+  if not authToken.IsEmpty then
+  begin
+    json['auth/slug'] := authSlug;
+    json['auth/time_elapsed'] := authElapsed;
+  end;
   Response.Content := json.AsJSONFormated;
 
   json.Free;
