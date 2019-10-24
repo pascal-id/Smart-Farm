@@ -26,7 +26,7 @@ var
 
 function GetUpdateData: TUpdateData;
 procedure ToggleSprinkle(const AIsOn: Boolean);
-procedure TurnSprinkleOnWithTimeout(const ATimeout: Cardinal);
+procedure TurnSprinkleOnWithTimeout(const ATimeout: Cardinal; const AUseThreads: Boolean = false);
 
 implementation
 
@@ -56,6 +56,8 @@ type
       rtString : (StringValue : ShortString);
   end;
 
+  // due to Arduino's inconsistent HTTP response, we need this function so that it will keep hitting the same
+  // endpoint until the returned param value in the response is the same as the one we sent
   function BombardUntilCorrect(const AURL,APath: String; const AReturnType: TReturnType): TBombardResult;
   var
     LStateNode: TJSONData;
@@ -92,17 +94,24 @@ end;
 procedure ToggleSprinkle(const AIsOn: Boolean);
 var
   LURL: String;
+  Continue: Boolean;
+  LStateNode: TJSONData;
 begin
   if AIsOn then
     LURL := TurnSprinkleOnURL
   else
     LURL := TurnSprinkleOffURL;
-  with GetJSONResponse(hmGET, LURL, []) do
-    try
-      // cek gagal atau berhasil?
-    finally
-      Free;
-    end;
+
+  Continue := true;
+  repeat
+    with GetJSONResponse(hmGET, LURL, []) do
+      try
+        LStateNode := FindPath('param');
+        if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(LURL)) then Continue := false;
+      finally
+        Free;
+      end;
+  until not Continue;
 end;
 
 type
@@ -119,24 +128,25 @@ begin
   inherited Create(true);
   FreeOnTerminate := true;
   FTimeout := ATimeout;
-  Resume;
+  Start;
 end;
 
 procedure TSprinkleTimeoutThread.Execute;
-var
-  StartTime: TTime;
 begin
   ToggleSprinkle(true);
-  StartTime := Time;
-  while IncMilliSecond(StartTime,FTimeout) >= Time do begin
-    Sleep(1);
-  end;
+  Sleep(FTimeout);
   ToggleSprinkle(false);
 end;
 
-procedure TurnSprinkleOnWithTimeout(const ATimeout: Cardinal);
+procedure TurnSprinkleOnWithTimeout(const ATimeout: Cardinal; const AUseThreads: Boolean = false);
 begin
-  TSprinkleTimeoutThread.Create(ATimeout);
+  if AUseThreads then
+    TSprinkleTimeoutThread.Create(ATimeout)
+  else begin
+    ToggleSprinkle(true);
+    Sleep(ATimeout);
+    ToggleSprinkle(false);
+  end;
 end;
 
 end.

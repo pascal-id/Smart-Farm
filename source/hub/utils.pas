@@ -63,8 +63,6 @@ begin
         WriteLn('GET ' + AURL);
         with TFPHTTPClient.Create(nil) do
           try
-            ConnectTimeout := 2000;
-            IOTimeout := 3000;
             for LHeader in AHeaders do
               RequestHeaders.Values[LHeader.Key] := LHeader.Value;
             LResponseBody := Get(AURL);
@@ -78,8 +76,6 @@ begin
         WriteLn(ABody);
         with TFPHTTPClient.Create(nil) do
           try
-            ConnectTimeout := 2000;
-            IOTimeout := 3000;
             for LHeader in AHeaders do
               RequestHeaders.Values[LHeader.Key] := LHeader.Value;
             LResponseBody := FormPost(AURL, ABody);
