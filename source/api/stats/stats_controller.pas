@@ -18,6 +18,9 @@ uses
 {$include ../common/smartfarm.inc}
 
 type
+
+  { TStatsModule }
+
   TStatsModule = class(TMyCustomWebModule)
   private
     procedure BeforeRequestHandler(Sender: TObject; ARequest: TRequest);
@@ -27,6 +30,7 @@ type
 
     procedure Get; override;
     procedure Post; override;
+    procedure Options; override;
   end;
 
 implementation
@@ -95,6 +99,12 @@ end;
 // POST Method Handler
 procedure TStatsModule.Post;
 begin
+end;
+
+procedure TStatsModule.Options;
+begin
+  Response.Code := 204;
+  Response.Content := '';
 end;
 
 

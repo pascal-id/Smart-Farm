@@ -24,6 +24,9 @@ uses
 {$include ../common/smartfarm.inc}
 
 type
+
+  { TNodeModule }
+
   TNodeModule = class(TMyCustomWebModule)
   private
     FStationID, FID: string;
@@ -34,6 +37,7 @@ type
 
     procedure Get; override;
     procedure Post; override;
+    procedure Options; override;
   end;
 
 implementation
@@ -279,6 +283,12 @@ begin
   device.Free;
 
   OutputJson(200, sMessage);
+end;
+
+procedure TNodeModule.Options;
+begin
+  Response.Code := 204;
+  Response.Content := '';
 end;
 
 end.

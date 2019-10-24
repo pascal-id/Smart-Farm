@@ -57,15 +57,13 @@ Setiap alat yang mempunyai fungsi penjadwalan otomatis bisa menggunakan data ber
     "type": "1",
     "mode": "0",
     "days": [
-      "-1",
       "0",
       "1",
       "2",
       "3",
       "4",
       "5",
-      "6",
-      "7"
+      "6"
     ],
     "value": "14:00",
     "active": "0"
