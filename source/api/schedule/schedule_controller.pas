@@ -149,6 +149,7 @@ begin
     FNodeID := _GET['nodeId'];
   scheduleAsString := _POST['schedule'];
   scheduleAsString := scheduleAsString.Replace('\"', '"');
+  scheduleAsString := scheduleAsString.Replace('\n', #10);
 
   if FStationID.IsEmpty or FNodeID.IsEmpty or scheduleAsString.IsEmpty then
     OutputJson(400, ERR_INVALID_PARAMETER);

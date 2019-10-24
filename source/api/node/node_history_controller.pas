@@ -78,6 +78,9 @@ begin
   field := _GET['field'];
   limitQuery := s2i(_GET['limit']);
 
+  if field = 'options' then
+    field := 'node_history.options';
+
   DataBaseInit;
   nodeHistory := TNodeHistoryModel.Create;
   whereAsArray.Add('stations.user_id=' + i2s(authUserId));
@@ -92,7 +95,7 @@ begin
   if not nodeHistory.Find(whereAsArray, 'date desc', limitQuery) then
   begin
     nodeHistory.Free;
-    OutputJson(404, ERR_HISTORY_EMPTY);
+    OutputJson(200, ERR_HISTORY_EMPTY);
   end;
 
   historyAsArray := TJSONArray.Create;
