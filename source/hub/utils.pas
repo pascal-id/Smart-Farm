@@ -20,11 +20,14 @@ function KeyValuePair(const AKey,AValue: String): TKeyValuePair; inline;
 function KVP(const AKey,AValue: String): TKeyValuePair; inline;
 function URLEncodeParams(const AParams: array of TKeyValuePair): String;
 // ABody is for POST only and must be URL encoded (use KeyValuePair + URLEncodeParams above to make one)!!!
-function GetJSONResponse(const AMethod: THTTPMethod; const AURL: String; const ABody: String = ''): TJSONData;
+function GetJSONResponse(const AMethod: THTTPMethod; const AURL: String; const AHeaders: array of TKeyValuePair; const ABody: String = ''): TJSONData;
 function NodeValueToIntDef(const AJSONData: TJSONData; const APath: String; const ADefault: Integer): Integer;
 function NodeValueToStrDef(const AJSONData: TJSONData; const APath: String; const ADefault: String): String;
 
 implementation
+
+uses
+  SysUtils;
 
 function KeyValuePair(const AKey,AValue: String): TKeyValuePair; inline;
 begin
@@ -47,8 +50,9 @@ begin
   Delete(Result,1,1); // Remove first '&'
 end;
 
-function GetJSONResponse(const AMethod: THTTPMethod; const AURL: String; const ABody: String = ''): TJSONData;
+function GetJSONResponse(const AMethod: THTTPMethod; const AURL: String; const AHeaders: array of TKeyValuePair; const ABody: String = ''): TJSONData;
 var
+  LHeader: TKeyValuePair;
   LResponseBody: String;
 begin
   Result := nil;
@@ -57,13 +61,31 @@ begin
     case AMethod of
       hmGet : begin
         WriteLn('GET ' + AURL);
-        LResponseBody := TFPHTTPClient.SimpleGet(AURL);
+        with TFPHTTPClient.Create(nil) do
+          try
+            ConnectTimeout := 2000;
+            IOTimeout := 3000;
+            for LHeader in AHeaders do
+              RequestHeaders.Values[LHeader.Key] := LHeader.Value;
+            LResponseBody := Get(AURL);
+          finally
+            Free;
+          end;
         WriteLn(LResponseBody);
       end;
       hmPost: begin
         WriteLn('POST ' + AURL);
         WriteLn(ABody);
-        LResponseBody := TFPHTTPClient.SimpleFormPost(AURL, ABody);
+        with TFPHTTPClient.Create(nil) do
+          try
+            ConnectTimeout := 2000;
+            IOTimeout := 3000;
+            for LHeader in AHeaders do
+              RequestHeaders.Values[LHeader.Key] := LHeader.Value;
+            LResponseBody := FormPost(AURL, ABody);
+          finally
+            Free;
+          end;
         WriteLn(LResponseBody);
       end;
     end;

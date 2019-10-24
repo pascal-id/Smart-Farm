@@ -63,7 +63,7 @@ type
   begin
     Continue := true;
     repeat
-      with GetJSONResponse(hmGET, AURL) do
+      with GetJSONResponse(hmGET, AURL, []) do
         try
           LStateNode := FindPath('param');
           if Assigned(LStateNode) and (LStateNode.AsString = GetURLParam(AURL)) then begin
@@ -97,7 +97,7 @@ begin
     LURL := TurnSprinkleOnURL
   else
     LURL := TurnSprinkleOffURL;
-  with GetJSONResponse(hmGET, LURL) do
+  with GetJSONResponse(hmGET, LURL, []) do
     try
       // cek gagal atau berhasil?
     finally

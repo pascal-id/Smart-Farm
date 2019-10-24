@@ -33,9 +33,11 @@ type
   end;
 
 var
+  Token,
   StationID,
   NodeID,
   GetUpdateURL,
+  GetScheduleURL,
   PostUpdateURL: String;
 
 function GetUpdateData: TUpdateData;
@@ -50,20 +52,25 @@ uses
 
 function GetUpdateData: TUpdateData;
 var
-  LRootNode,LStateNode,LScheduleNode: TJSONData;
+  LRootNode,LStateNode,LScheduleNode,LDaysNode: TJSONData;
   LSchedule: TSchedule;
   i,j: Integer;
 begin
   Result := Default(TUpdateData);
 
-  LRootNode := GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)]));
+  LRootNode := GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetUpdateURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('id',NodeID)]),[KVP('Token',Token)]);
   try
     Result.Sprinkle.State    := NodeValueToIntDef(LRootNode,'data[0].options.devices.sprinkle.state',-1);
     Result.Temperature.State := NodeValueToIntDef(LRootNode,'data[0].options.devices.suhu.state',-1);
     Result.Temperature.Value := NodeValueToIntDef(LRootNode,'data[0].options.devices.suhu.value',-1);
     Result.Humidity.State    := NodeValueToIntDef(LRootNode,'data[0].options.devices.kelembaban.state',-1);
     Result.Humidity.Value    := NodeValueToIntDef(LRootNode,'data[0].options.devices.kelembaban.value',-1);
+  finally
+    LRootNode.Free;
+  end;
 
+  LRootNode := GetJSONResponse(hmGET, IncludeHTTPPathDelimiter(GetScheduleURL) + '?' + URLEncodeParams([KVP('stationId',StationID),KVP('nodeId',NodeID)]),[KVP('Token',Token)]);
+  try
     LStateNode := LRootNode.FindPath('data[0].schedules');
     if Assigned(LStateNode) then begin
       for i := 0 to LStateNode.Count - 1 do begin
@@ -74,10 +81,10 @@ begin
         LSchedule.IsActive := NodeValueToIntDef(LScheduleNode,'active',-1) = 1;
         LSchedule.Value    := NodeValueToStrDef(LScheduleNode,'value','');
 
-        LStateNode := LScheduleNode.FindPath('days');
-        if Assigned(LStateNode) then
-          for j := 0 to LStateNode.Count - 1 do
-            Include(LSchedule.Days,LStateNode.Items[j].AsInteger);
+        LDaysNode := LScheduleNode.FindPath('days');
+        if Assigned(LDaysNode) then
+          for j := 0 to LDaysNode.Count - 1 do
+            Include(LSchedule.Days,LDaysNode.Items[j].AsInteger);
 
         SetLength(Result.Schedules,Length(Result.Schedules) + 1);
         Result.Schedules[High(Result.Schedules)] := LSchedule;
@@ -95,7 +102,7 @@ var
 begin
   if AIsSprinkleOn then AIsSprinkleOnIntVal := 0 else AIsSprinkleOnIntVal := 1;
   OptionsJSON := Format('{"devices":{"suhu":{"value":%02f,"state":0},"kelembaban":{"value":%d,"state":0},"sprinkle":{"state":%d}}}',[ATemperature,AHumidity,AIsSprinkleOnIntVal]);
-  GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),URLEncodeParams([KVP('id',NodeID),KVP('options',OptionsJSON)]));
+  GetJSONResponse(hmPOST,IncludeHTTPPathDelimiter(PostUpdateURL),[KVP('Token',Token)],URLEncodeParams([KVP('id',NodeID),KVP('options',OptionsJSON)]));
 end;
 
 end.

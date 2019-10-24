@@ -3,35 +3,43 @@ program ArduinoDummyServer;
 {$mode objfpc}
 
 uses
-  classes,
+  Classes,
+  SysUtils,
   fphttpapp,
   httpdefs,
   httproute;
 
 var
   IsSprinkleOn: Boolean;
+  Temperature: Double;
+  Humidity: Integer;
 
 procedure HandleRequest(ARequest: TRequest; AResponse: TResponse);
 var
-  LSprinkleStatus: String;
+  LModule,LTmpString: String;
 begin
-  case ARequest.QueryFields.Values['module'] of
-    'suhu'       : AResponse.Content := '{"data":{"nilai":28.75},"param":"module=suhu"}';
-    'kelembaban' : AResponse.Content := '{"data":{"nilai":888},"param":"module=kelembaban"}';
+  LModule := ARequest.QueryFields.Values['module'];
+  case LModule of
+    'suhu'       : begin
+      WriteStr(LTmpString,'{"data":{"nilai":',Temperature:1:2,'},"param":"module='+LModule+'"}');
+      AResponse.Content := LTmpString;
+    end;
+    'kelembaban' : begin
+      WriteStr(LTmpString,'{"data":{"nilai":',Humidity,'},"param":"module='+LModule+'"}');
+      AResponse.Content := LTmpString;
+    end;
     'status-kran': begin
-      if IsSprinkleOn then LSprinkleStatus := 'nyala' else LSprinkleStatus := 'mati';
-      AResponse.Content := '{"data":{"status":"'+LSprinkleStatus+'"},"param":"module=status-kran"}';
+      if IsSprinkleOn then LTmpString := 'nyala' else LTmpString := 'mati';
+      AResponse.Content := '{"data":{"status":"'+LTmpString+'"},"param":"module='+LModule+'"}';
     end;
-    'buka-kran'  : begin
-      IsSprinkleOn := true;
-      AResponse.Content := '{"param":"module=buka-kran"}';
-    end;
-    'tutup-kran' : begin
-      IsSprinkleOn := false;
-      AResponse.Content := '{"param":"module=tutup-kran"}';
-    end;
-    otherwise      AResponse.Code    := 400;
+    'buka-kran'     : IsSprinkleOn   := true;
+    'tutup-kran'    : IsSprinkleOn   := false;
+    'set-suhu'      : Temperature    := StrToFloatDef(ARequest.QueryFields.Values['value'],0);
+    'set-kelembaban': Humidity       := StrToIntDef(ARequest.QueryFields.Values['value'],0);
+    otherwise         AResponse.Code := 400;
   end;
+  if AResponse.Content = '' then
+    AResponse.Content := '{"param":"module='+LModule+'"}';
 end;
 
 begin

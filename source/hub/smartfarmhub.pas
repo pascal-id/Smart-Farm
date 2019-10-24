@@ -6,8 +6,6 @@ uses
   cthreads,
   SysUtils,
   DateUtils,
-  ssockets,
-  fphttpclient,
   IniFiles,
   SmartFarmServer,
   SmartFarmArduino;
@@ -32,16 +30,17 @@ var
 begin
   Config := TIniFile.Create('config.ini');
   try
-    SmartFarmServer.StationID := Config.ReadString('Server','StationID','');
-    SmartFarmServer.GetUpdateURL := Config.ReadString('Server','GetUpdateURL','');
-    SmartFarmServer.PostUpdateURL := Config.ReadString('Server','PostUpdateURL','');
+    SmartFarmServer.Token          := Config.ReadString('Server','Token','');
+    SmartFarmServer.StationID      := Config.ReadString('Server','StationID','');
+    SmartFarmServer.NodeID         := Config.ReadString('Server','NodeID','');
+    SmartFarmServer.GetUpdateURL   := Config.ReadString('Server','GetUpdateURL','');
+    SmartFarmServer.GetScheduleURL := Config.ReadString('Server','GetScheduleURL','');
+    SmartFarmServer.PostUpdateURL  := Config.ReadString('Server','PostUpdateURL','');
 
-    SmartFarmServer.NodeID := Config.ReadString('RaspberryPi','NodeID','');
-
-    SmartFarmArduino.GetTemperatureURL := Config.ReadString('Arduino','GetTemperatureURL','');
-    SmartFarmArduino.GetHumidityURL := Config.ReadString('Arduino','GetHumidityURL','');
-    SmartFarmArduino.TurnSprinkleOnURL := Config.ReadString('Arduino','TurnSprinkleOnURL','');
-    SmartFarmArduino.TurnSprinkleOffURL := Config.ReadString('Arduino','TurnSprinkleOffURL','');
+    SmartFarmArduino.GetTemperatureURL    := Config.ReadString('Arduino','GetTemperatureURL','');
+    SmartFarmArduino.GetHumidityURL       := Config.ReadString('Arduino','GetHumidityURL','');
+    SmartFarmArduino.TurnSprinkleOnURL    := Config.ReadString('Arduino','TurnSprinkleOnURL','');
+    SmartFarmArduino.TurnSprinkleOffURL   := Config.ReadString('Arduino','TurnSprinkleOffURL','');
     SmartFarmArduino.GetSprinkleStatusURL := Config.ReadString('Arduino','GetSprinkleStatusURL','');
   finally
     Config.Free;
@@ -70,30 +69,57 @@ begin
         // type: 0 & mode: 0 => trigger by humidity
         if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) then begin
           LScheduleValue := StrToIntDef(LSchedule.Value,0);
-          if (AArduinoUpdateData.Humidity <= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
-          else if (AArduinoUpdateData.Humidity > LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
+          if (AArduinoUpdateData.Humidity <= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then begin
+            Result := ssOn;
+            writeln('CASE 1: Humidity(',AArduinoUpdateData.Humidity,') <= Schedule(',LScheduleValue,'), Springkle Off');
+          end
+          else if (AArduinoUpdateData.Humidity > LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then begin
+            Result := ssOff;
+            writeln('CASE 2: Humidity(',AArduinoUpdateData.Humidity,') > Schedule(',LScheduleValue,'), Springkle On');
+          end;
         end;
 
-        // type: 0 & mode: 1 => trigger by temperature
-        if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1)  then begin
-          LScheduleValue := StrToIntDef(LSchedule.Value,0);
-          if (AArduinoUpdateData.Temperature >= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
-          else if (AArduinoUpdateData.Temperature < LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
-        end;
+        if Result = ssKeep then
+          // type: 0 & mode: 1 => trigger by temperature
+          if (LSchedule.Type_ = 0) and (LSchedule.Mode = 1)  then begin
+            LScheduleValue := StrToIntDef(LSchedule.Value,0);
+            if (AArduinoUpdateData.Temperature >= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOn;
+              WriteLn('CASE 3: Temperature(',AArduinoUpdateData.Temperature,') >= Schedule(',LScheduleValue,'), Springkle Off');
+            end
+            else if (AArduinoUpdateData.Temperature < LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOff;
+              WriteLn('CASE 4: Temperature(',AArduinoUpdateData.Temperature,') < Schedule(',LScheduleValue,'), Springkle On');
+            end;
+          end;
 
-        // type: 1 & mode: 0 => trigger by daily schedule
-        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 0)
-          and (Byte(DayOfTheWeek(Now) - 1) in LSchedule.Days)
-          and (Format('%02d:%02d',[HourOfTheDay(Now),MinuteOfTheDay(Now)]) = LSchedule.Value)
-          and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
-        else if AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
+        if Result = ssKeep then
+          // type: 1 & mode: 0 => trigger by daily schedule
+          if (LSchedule.Type_ = 1) and (LSchedule.Mode = 0)
+            and (Byte(DayOfTheWeek(Now) - 1) in LSchedule.Days)
+            and (Format('%02d:%02d',[HourOfTheDay(Now),MinuteOfTheDay(Now)]) = LSchedule.Value)
+            and not AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOn;
+              WriteLn('CASE 5');
+            end
+          else if AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOff;
+              WriteLn('CASE 6');
+            end;
 
-        // type: 1 & mode: 1 => trigger by one time schedule
-        if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) then begin
-          LScheduleDateTime := StrToDateTime(LSchedule.Value);
-          if (Now >= LScheduleDateTime) and (SecondsBetween(Now, LScheduleDateTime) < 60)and not AArduinoUpdateData.IsSprinkleOn then Result := ssOn
-          else if AArduinoUpdateData.IsSprinkleOn then Result := ssOff;
-        end;
+        if Result = ssKeep then
+          // type: 1 & mode: 1 => trigger by one time schedule
+          if (LSchedule.Type_ = 1) and (LSchedule.Mode = 1) then begin
+            LScheduleDateTime := StrToDateTime(LSchedule.Value);
+            if (Now >= LScheduleDateTime) and (SecondsBetween(Now, LScheduleDateTime) < 60)and not AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOn;
+              WriteLn('CASE 7');
+            end
+            else if AArduinoUpdateData.IsSprinkleOn then begin
+              Result := ssOff;
+              WriteLn('CASE 8');
+            end;
+          end;
       end;
   end;
 end;
@@ -122,9 +148,7 @@ begin
 
       SmartFarmServer.UpdateEnvCondData(ArduinoUpdateData.Temperature,ArduinoUpdateData.Humidity,ArduinoUpdateData.IsSprinkleOn);
     except
-      on e: ESocketError do
-        DumpExceptionCallStack(e);
-      on e: EHTTPClient do
+      on e: Exception do
         DumpExceptionCallStack(e);
     end;
   end;
