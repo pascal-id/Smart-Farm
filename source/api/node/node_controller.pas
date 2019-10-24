@@ -162,11 +162,14 @@ end;
 // POST Method Handler
 procedure TNodeModule.Post;
 var
+  i, indexDevice: Integer;
   stationId: integer;
-  sDid, sMessage: string;
+  sDid, sMessage, sKey: string;
   device: TNodeModel;
   history: TNodeHistoryModel;
   deviceState, deviceValue, deviceOptions, activity, description: string;
+  nodeOptionsExisting: string;
+  nodeOptionsExistingAsJson: TJSONData;
   deviceOptionsAsJson: TJSONObject;
   temperatureAverageExisting, humidityAverageExisting,
     temperatureUpdate, humadityUpdate: Double;
@@ -199,6 +202,7 @@ begin
   begin
     OutputJson(404, ERR_NODE_NOT_FOUND);
   end;
+  nodeOptionsExisting := device['options'];
 
   sDid := device['nid'];
   stationId := device['station_id'];
@@ -216,6 +220,15 @@ begin
       deviceOptionsAsJson := TJSONObject( GetJSON(deviceOptions));
       temperatureUpdate := s2f(jsonGetData(deviceOptionsAsJson, 'devices/' + TEMPERATURE_KEY + '/value'));
       humadityUpdate := s2f(jsonGetData(deviceOptionsAsJson, 'devices/' + HUMIDITY_KEY + '/value'));
+
+      indexDevice := deviceOptionsAsJson.IndexOfName('devices');
+      if indexDevice <> -1 then
+      begin
+        for i := 0 to deviceOptionsAsJson.Items[indexDevice].Count-1 do
+        begin
+          TJSONObject(deviceOptionsAsJson.Items[indexDevice].Items[i]).Add('date',Now.AsString);
+        end;
+      end;
 
       // set temperature average
       if temperatureUpdate > 0 then
@@ -241,23 +254,18 @@ begin
         device['humidity_average'] := humadityUpdate;
       end;
 
-      {
-      if IsJsonValid(existingDeviceOptions) then
+      // rebuild options json
+      if IsJsonValid(nodeOptionsExisting) then
       begin
-        deviceOptionsAsJson := TJSONObject( GetJSON(deviceOptions));
-        existingDeviceOptionsAsJson := TJSONObject( GetJSON(existingDeviceOptions));
-        for i:=0 to deviceOptionsAsJson.Count-1 do
-        begin
-          sKey := deviceOptionsAsJson.Names[i];
-          existingDeviceOptionsAsJson.Elements[sKey] := deviceOptionsAsJson.Items[i];
-        end;
-        deviceOptions := existingDeviceOptionsAsJson.AsJSON;
-        existingDeviceOptionsAsJson.Free;
-        //deviceOptionsAsJson.Free;
+        //nodeOptionsExistingAsJson := GetJSON(nodeOptionsExisting);
+
+        //TODO: rebuild options json
+
+
       end;
-      }
+
       activity := 'bulk';
-      device['options'] := deviceOptions;
+      device['options'] := deviceOptionsAsJson.AsJSON;
     end;
   end;
   if device.Save('slug="' + FID + '"') then
