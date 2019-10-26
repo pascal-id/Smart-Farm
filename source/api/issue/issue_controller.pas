@@ -132,7 +132,8 @@ begin
   DataBaseInit();
 
   station := TStationModel.Create();
-  if not station.Find(['slug="' + FStationID + '"', 'user_id='+i2s(authUserId)]) then
+  //if not station.Find(['slug="' + FStationID + '"', 'user_id='+i2s(authUserId)]) then
+  if not station.Find(['slug="' + FStationID + '"']) then
   begin
     station.Free;
     OutputJson(404, ERR_STATION_NOT_FOUND);

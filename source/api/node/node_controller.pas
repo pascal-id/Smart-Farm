@@ -2,6 +2,9 @@ unit node_controller;
 {
   USAGE:
 
+  [x] Get Device List
+  curl "smartfarm.pascal-id.test/node/?stationId=tgr123"
+
   [x] Get Device Info
   curl "smartfarm.pascal-id.test/node/?stationId=tgr123&id=qsw345sxP"
 
@@ -9,7 +12,11 @@ unit node_controller;
   curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&value=3'
 
   curl -X POST "smartfarm.pascal-id.test/node/" \
-    -d 'id=qsw345sxP&state=1&value=3&options={"devices":{"suhu":{"value":28.75,"state":0},"kelembaban":{"value":888,"state":0},"sprinkle":{"state":1}}}'
+    -d 'id=qsw345sxP&state=1&value=3&options={"devices":{"suhu":{"value":28.75,"state":0},"kelembaban":{"value":77,"state":0},"sprinkle":{"state":1}}}'
+
+  [x] Set Specific Device condition
+  curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&device=suhu&value=33'
+  curl -X POST "smartfarm.pascal-id.test/node/" -d 'id=qsw345sxP&device=springkler&state=1'
 
 }
 {$mode objfpc}{$H+}
@@ -68,7 +75,6 @@ procedure TNodeModule.Get;
 var
   i, indexOptions, indexSchedules: integer;
   deviceOptions, schedulesAsString: string;
-  whereAsArray: TStringArray;
   deviceAsJsonArray: TJSONArray;
   json: TJSONUtil;
 begin
@@ -79,25 +85,12 @@ begin
     OutputJson(404, ERR_INVALID_PARAMETER);
   end;
 
-  // Prepare data selection
-  whereAsArray.Add('stations.user_id=' + i2s(authUserId));
-  whereAsArray.Add('stations.status_id=0');
-  whereAsArray.Add('nodes.status_id=0');
-  whereAsArray.Add('stations.slug="' + FStationID + '"');
-  if not FID.IsEmpty then
-  begin
-    whereAsArray.Add('nodes.slug="' + FID + '"');
-  end;
-
   DataBaseInit;
   json := TJSONUtil.Create;
   with TNodeModel.Create do
   begin
-    AddJoin('stations', 'sid', 'station_id', []);
-    if not Find(whereAsArray) then
-    begin
+    if not IsNodeExists(FStationID, FID) then
       OutputJson(404, ERR_DATA_NOT_FOUND);
-    end;
 
     deviceAsJsonArray := TJSONArray.Create;
     if not DataToJSON(Data, deviceAsJsonArray, False) then
@@ -167,9 +160,10 @@ var
   sDid, sMessage, sKey: string;
   device: TNodeModel;
   history: TNodeHistoryModel;
+  deviceName,
   deviceState, deviceValue, deviceOptions, activity, description: string;
   nodeOptionsExisting: string;
-  nodeOptionsExistingAsJson: TJSONData;
+  nodeOptionsExistingAsJson: TJSONUtil;
   deviceOptionsAsJson: TJSONObject;
   temperatureAverageExisting, humidityAverageExisting,
     temperatureUpdate, humadityUpdate: Double;
@@ -187,11 +181,15 @@ begin
   deviceState := _POST['state'];
   deviceValue := _POST['value'];
   deviceOptions := _POST['options'];
+  deviceName := _POST['device'];
   //deviceOptions := UrlDecode(deviceOptions);
   deviceOptions := deviceOptions.Replace('\n', #10);
   deviceOptions := deviceOptions.Replace('\"', '"');
-  if not IsJsonValid(deviceOptions) then
-    OutputJson(400, ERR_INVALID_PARAMETER_VALUE);
+  //if not IsJsonValid(deviceOptions) then
+  //  OutputJson(400, ERR_INVALID_PARAMETER_VALUE);
+
+  if deviceState.IsEqualTo('off') then deviceState := '1';
+  if deviceState.IsEqualTo('on') then deviceState := '0';
 
   if (deviceState.IsEmpty and deviceValue.IsEmpty and deviceOptions.IsEmpty) then
     OutputJson(404, ERR_INVALID_PARAMETER);
@@ -208,9 +206,9 @@ begin
   stationId := device['station_id'];
 
   sMessage := INFO_DEVICE_CHECKID;
-  if not deviceState.IsEmpty then
+  if deviceName.IsEmpty and (not deviceState.IsEmpty) then
     device['state'] := deviceState;
-  if not deviceValue.IsEmpty then
+  if deviceName.IsEmpty and (not deviceValue.IsEmpty) then
     device['value'] := deviceValue;
   if not deviceOptions.IsEmpty then
   begin
@@ -267,7 +265,39 @@ begin
       activity := 'bulk';
       device['options'] := deviceOptionsAsJson.AsJSON;
     end;
+  end else
+  begin
+    // for specific device
+    if not deviceName.IsEmpty then
+    begin
+      activity := 'manual';
+      description := '';
+      nodeOptionsExistingAsJson := TJSONUtil.Create;
+      nodeOptionsExistingAsJson.LoadFromJsonString(nodeOptionsExisting);
+      sMessage := _POST['state'];
+      if sMessage.IsEqualTo('off') then sMessage := '1';
+      if sMessage.IsEqualTo('on') then sMessage := '0';
+      if not sMessage.IsEmpty then
+      begin
+        nodeOptionsExistingAsJson['devices/'+deviceName+'/state'] := sMessage.AsInteger;
+        nodeOptionsExistingAsJson['devices/'+deviceName+'/date'] := Now.AsString;
+        description := description + deviceName + ' state set to ' + sMessage + ',';
+        deviceState := '';
+      end;
+      sMessage := _POST['value'];
+      if not sMessage.IsEmpty then
+      begin
+        nodeOptionsExistingAsJson['devices/'+deviceName+'/value'] := sMessage.AsInteger;
+        nodeOptionsExistingAsJson['devices/'+deviceName+'/date'] := Now.AsString;
+        description := description + deviceName + ' value set to ' + sMessage + ',';
+        deviceValue := '';
+      end;
+      device['options'] := nodeOptionsExistingAsJson.AsJSON;
+      deviceOptions := nodeOptionsExisting;
+    end;
+
   end;
+
   if device.Save('slug="' + FID + '"') then
   begin
     history := TNodeHistoryModel.Create;

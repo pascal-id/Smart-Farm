@@ -19,7 +19,7 @@ Parameters:
 ## USAGE
 
 
-### User List
+### Station List
 
 with curl
 

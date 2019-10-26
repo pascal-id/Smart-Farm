@@ -1,5 +1,11 @@
 # Konvensi Transmisi Data
 
+Setiap pengambilan/pengiriman data harus memberikan informasi **Token** melalui Header. Token didapatkan melalui [autentifikasi user login](Auth.md).
+Berikut contoh jika dilakukan melalui Curl dari konsole/terminal:
+
+```bash
+curl "smartfarm.pascal-id.test/station/" -H 'Token: 084B4BFBE691F3DA3A99EA702F7D10C6CEB4A04E982F55F7C3AD9A0AA65A65CB'
+```
 
 ## Update informasi device di tiap node
 
