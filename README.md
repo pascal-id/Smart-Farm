@@ -21,16 +21,13 @@ Proses komunikasi dilakukan melalui API (_Application Programming Interface_)
 
 ### Prerequisites
 
-- Free Pascal Compile, [https://www.freepascal.org/](https://www.freepascal.org/)
+- Free Pascal Compiler, [https://www.freepascal.org/](https://www.freepascal.org/)
 - FastPlaz framework, [http://fastplaz.com/](http://fastplaz.com/)
 
 ### Compiling
 
-### Deploy to server
-
-### Konfigurasi API
-
-Buka file ```public_html/config/config.json``` di direktori webroot. Sesuaikan isinya dengan kebutuhan Anda.
+- [Build API](docs/Build-API.md)
+- [Build Hub (Rasberry Pi)](docs/Build-API.md)
 
 ## Detail Penggunaan Endpoint API
 
