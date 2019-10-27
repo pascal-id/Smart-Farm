@@ -79,6 +79,9 @@ begin
   if Result = ssKeep then begin
     for LSchedule in AServerUpdateData.Schedules do
       if LSchedule.IsActive then begin
+        // Commented else parts are conflicting each other at the moment, hence we refrain from using it for automatic off
+        // and instead go with (configurable, see SprinkleTurnOnTimeoutMilliseconds variable) timed out on solution for now
+
         // type: 0 & mode: 0 => trigger by humidity
         if (LSchedule.Type_ = 0) and (LSchedule.Mode = 0) then begin
           LScheduleValue := StrToIntDef(LSchedule.Value,0);
@@ -137,7 +140,7 @@ begin
 
             if LIsSchedulePastNow and LIsOvertimeWithinTolerance and not AArduinoUpdateData.IsSprinkleOn then begin
               Result := ssOnTimeout;
-              WriteLn('CASE 9: ScheduleStart(',DateToStr(LScheduleDateTime),') <= Now(',DateToStr(Now),') <= ScheduleEnd(',DateToStr(LScheduleDateTime + OneMinute),'), springkle off');
+              WriteLn('CASE 9: ScheduleStart(',DateTimeToStr(LScheduleDateTime),') <= Now(',DateTimeToStr(Now),') <= ScheduleEnd(',DateTimeToStr(LScheduleDateTime + OneMinute),'), springkle off');
             end;
             // else if AArduinoUpdateData.IsSprinkleOn then begin
             //   Result := ssOff;
@@ -152,6 +155,8 @@ var
   ServerUpdateData: SmartFarmServer.TUpdateData;
   ArduinoUpdateData: SmartFarmArduino.TUpdateData;
 begin
+  DefaultFormatSettings.ShortDateFormat := 'yyyy-mm-dd';
+  DefaultFormatSettings.DateSeparator   := '-';
   ReadAndPopulateConfig;
   while true do begin
     try
@@ -159,16 +164,10 @@ begin
       ServerUpdateData := SmartFarmServer.GetUpdateData;
 
       case GetNextSprinkleState(ServerUpdateData, ArduinoUpdateData) of
-        ssOnTimeout : SmartFarmArduino.TurnSprinkleOnWithTimeout(SprinkleTurnOnTimeoutMilliseconds);
-        ssOn : begin
-          SmartFarmArduino.ToggleSprinkle(true);
-          ArduinoUpdateData.IsSprinkleOn := true;
-        end;
-        ssOff: begin
-          SmartFarmArduino.ToggleSprinkle(false);
-          ArduinoUpdateData.IsSprinkleOn := false;
-        end;
-        ssKeep: ; // intentionally do nothing
+        ssOnTimeout: SmartFarmArduino.TurnSprinkleOnWithTimeout(SprinkleTurnOnTimeoutMilliseconds);
+        ssOn       : SmartFarmArduino.ToggleSprinkle(true);
+        ssOff      : SmartFarmArduino.ToggleSprinkle(false);
+        ssKeep     : ; // intentionally do nothing
       end;
 
       SmartFarmServer.UpdateEnvCondData(ArduinoUpdateData.Temperature,ArduinoUpdateData.Humidity,ServerUpdateData.Sprinkle.State = 0);
