@@ -78,7 +78,7 @@ begin
 
         LSchedule.Type_    := NodeValueToIntDef(LScheduleNode,'type',-1);
         LSchedule.Mode     := NodeValueToIntDef(LScheduleNode,'mode',-1);
-        LSchedule.IsActive := NodeValueToIntDef(LScheduleNode,'active',-1) = 1;
+        LSchedule.IsActive := NodeValueToIntDef(LScheduleNode,'active',-1) = 0;
         LSchedule.Value    := NodeValueToStrDef(LScheduleNode,'value','');
 
         LDaysNode := LScheduleNode.FindPath('days');
