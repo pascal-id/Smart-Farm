@@ -6,11 +6,11 @@ Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi
 
 ## Arsitektur
 
-![Arsitektur](docs/images/arsitektur.png)
+![Arsitektur](docs/api/images/arsitektur.png)
 
 Arsitektur sistem ini menunjukan bahwa terdapat beberapa seksi perangkat:
 - _Device controller_, dengan menggunakan arduino. Untuk membaca dan mengendalikan sensor/motor.
-- Manajemen Hub, menggunakan Rasberry Pi. Hub ini menghubungkan antara _end-user_ yang menggunakan aplikasi mobile guna membaca dan mengendalikan sensor yang dilayani oleh _Device Controller_. 
+- Manajemen Hub, menggunakan Rasberry Pi. Hub ini menghubungkan antara _end-user_ yang menggunakan aplikasi mobile guna membaca dan mengendalikan sensor yang dilayani oleh _Device Controller_.
 Proses komunikasi dilakukan melalui API (_Application Programming Interface_)
 - API Server, sebagai pusat logic kendali dari keseluruhan sistem.
 - Aplikasi (mobile). Antar muka akhir pengguna dalam memantau kondisi **Smart Farm**-nya.
