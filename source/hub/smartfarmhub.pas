@@ -7,6 +7,7 @@ uses
   SysUtils,
   DateUtils,
   IniFiles,
+  Utils,
   SmartFarmServer,
   SmartFarmArduino;
 
@@ -18,10 +19,10 @@ begin
   if E <> nil then begin
     WriteLn(StdErr,E.ClassName + ': ' + E.Message);
   end;
-  WriteLn(BackTraceStrFunc(ExceptAddr));
+  WriteLn(StdErr,BackTraceStrFunc(ExceptAddr));
   Frames := ExceptFrames;
   for I := 0 to ExceptFrameCount - 1 do
-    WriteLn(BackTraceStrFunc(Frames[I]));
+    WriteLn(StdErr,BackTraceStrFunc(Frames[I]));
 end;
 
 var
@@ -57,6 +58,7 @@ type
 
 function GetNextSprinkleState(const AServerUpdateData: SmartFarmServer.TUpdateData; const AArduinoUpdateData: SmartFarmArduino.TUpdateData): TSprinkleState;
 var
+  LTmpString: String;
   LSchedule: TSchedule;
   LScheduleValue,LToday,LNowHour,LNowMinute: Integer;
   LIsSchedulePastNow,LIsOvertimeWithinTolerance: Boolean;
@@ -67,19 +69,19 @@ begin
   // manual sprinkle state change request
   if not AArduinoUpdateData.IsSprinkleOn and (AServerUpdateData.Sprinkle.State = 0) then begin
     Result := ssOn;
-    WriteLn('CASE 1: Manual springkle on request');
+    Log('CASE 1: Manual springkle on request');
   end;
 
   if AArduinoUpdateData.IsSprinkleOn and (AServerUpdateData.Sprinkle.State = 1) then begin
     Result := ssOff;
-    WriteLn('CASE 2: Manual springkle off request');
+    Log('CASE 2: Manual springkle off request');
   end;
 
   // handle schedules only when there's no manual request
   if Result = ssKeep then begin
     for LSchedule in AServerUpdateData.Schedules do
       if LSchedule.IsActive then begin
-        // Commented else parts are conflicting each other at the moment, hence we refrain from using it for automatic off
+        // Commented else if parts are conflicting each other at the moment, hence we refrain from using it for automatic off
         // and instead go with (configurable, see SprinkleTurnOnTimeoutMilliseconds variable) timed out on solution for now
 
         // type: 0 & mode: 0 => trigger by humidity
@@ -88,11 +90,13 @@ begin
 
           if (AArduinoUpdateData.Humidity >= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then begin
             Result := ssOnTimeout;
-            writeln('CASE 3: Humidity(',AArduinoUpdateData.Humidity,') >= Schedule(',LScheduleValue,'), springkle off');
+            WriteStr(LTmpString,'CASE 3: Humidity(%',AArduinoUpdateData.Humidity,') >= Schedule(',LScheduleValue,'), springkle off');
+            Log(LTmpString);
           end;
           // else if (AArduinoUpdateData.Humidity < LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then begin
           //   Result := ssOff;
-          //   writeln('CASE 4: Humidity(',AArduinoUpdateData.Humidity,') < Schedule(',LScheduleValue,'), springkle on');
+          //   WriteStr(LTmpString,'CASE 4: Humidity(',AArduinoUpdateData.Humidity,') < Schedule(',LScheduleValue,'), springkle on');
+          //   Log(LTmpString);
           // end;
         end;
 
@@ -103,11 +107,13 @@ begin
 
             if (AArduinoUpdateData.Temperature >= LScheduleValue) and not AArduinoUpdateData.IsSprinkleOn then begin
               Result := ssOnTimeout;
-              WriteLn('CASE 5: Temperature(',AArduinoUpdateData.Temperature,') >= Schedule(',LScheduleValue,'), springkle off');
+              WriteStr(LTmpString,'CASE 5: Temperature(',AArduinoUpdateData.Temperature,') >= Schedule(',LScheduleValue,'), springkle off');
+              Log(LTmpString);
             end;
             // else if (AArduinoUpdateData.Temperature < LScheduleValue) and AArduinoUpdateData.IsSprinkleOn then begin
             //   Result := ssOff;
-            //   WriteLn('CASE 6: Temperature(',AArduinoUpdateData.Temperature,') < Schedule(',LScheduleValue,'), springkle on');
+            //   WriteStr(LTmpString,'CASE 6: Temperature(',AArduinoUpdateData.Temperature,') < Schedule(',LScheduleValue,'), springkle on');
+            //   Log(LTmpString);
             // end;
           end;
 
@@ -123,11 +129,13 @@ begin
               and not AArduinoUpdateData.IsSprinkleOn
             then begin
               Result := ssOnTimeout;
-              WriteLn('CASE 7: Daily schedule on day ',DefaultFormatSettings.LongDayNames[DayOfTheWeek(Now)],' at ',LNowHour,':',LNowMinute,', springkle off');
+              WriteStr(LTmpString,'CASE 7: Daily schedule on day ',DefaultFormatSettings.LongDayNames[DayOfTheWeek(Now)],' at ',LNowHour,':',LNowMinute,', springkle off');
+              Log(LTmpString);
             end;
           // else if AArduinoUpdateData.IsSprinkleOn then begin
           //     Result := ssOff;
-          //     WriteLn('CASE 8: No matching daily schedule, springkle on');
+          //     WriteStr(LTmpString,'CASE 8: No matching daily schedule, springkle on');
+          //     Log(LTmpString);
           //   end;
           end;
 
@@ -140,11 +148,13 @@ begin
 
             if LIsSchedulePastNow and LIsOvertimeWithinTolerance and not AArduinoUpdateData.IsSprinkleOn then begin
               Result := ssOnTimeout;
-              WriteLn('CASE 9: ScheduleStart(',DateTimeToStr(LScheduleDateTime),') <= Now(',DateTimeToStr(Now),') <= ScheduleEnd(',DateTimeToStr(LScheduleDateTime + OneMinute),'), springkle off');
+              WriteStr(LTmpString,'CASE 9: ScheduleStart(',DateTimeToStr(LScheduleDateTime),') <= Now(',DateTimeToStr(Now),') <= ScheduleEnd(',DateTimeToStr(LScheduleDateTime + OneMinute),'), springkle off');
+              Log(LTmpString);
             end;
             // else if AArduinoUpdateData.IsSprinkleOn then begin
             //   Result := ssOff;
-            //   WriteLn('CASE 10: No matching one time schedule, springkle on');
+            //   WriteStr(LTmpString,'CASE 10: No matching one time schedule, springkle on');
+            //   Log(LTmpString);
             // end;
           end;
       end;
@@ -158,6 +168,7 @@ begin
   DefaultFormatSettings.ShortDateFormat := 'yyyy-mm-dd';
   DefaultFormatSettings.DateSeparator   := '-';
   ReadAndPopulateConfig;
+
   while true do begin
     try
       ArduinoUpdateData := SmartFarmArduino.GetUpdateData;

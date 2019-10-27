@@ -10,11 +10,18 @@ uses
   jsonparser;
 
 type
-  THTTPMethod = (hmGET,hmPOST);
   TKeyValuePair = record
     Key,Value: String;
   end;
 
+  THTTPMethod = (hmGET,hmPOST);
+
+{$ifdef enablelogging}
+var
+  IsLoggingEnabled: Boolean;
+{$endif}
+
+procedure Log(const AMessage: String = ''); inline;
 function KeyValuePair(const AKey,AValue: String): TKeyValuePair; inline;
 // lazy typer version og KeyValuePair
 function KVP(const AKey,AValue: String): TKeyValuePair; inline;
@@ -28,6 +35,13 @@ implementation
 
 uses
   SysUtils;
+
+procedure Log(const AMessage: String = ''); inline;
+begin
+  {$ifdef enablelogging}
+  if IsLoggingEnabled then WriteLn(AMessage);
+  {$endif}
+end;
 
 function KeyValuePair(const AKey,AValue: String): TKeyValuePair; inline;
 begin
@@ -60,7 +74,7 @@ begin
     LResponseBody := '';
     case AMethod of
       hmGet : begin
-        WriteLn('GET ' + AURL);
+        Log('GET ' + AURL);
         with TFPHTTPClient.Create(nil) do
           try
             for LHeader in AHeaders do
@@ -69,11 +83,11 @@ begin
           finally
             Free;
           end;
-        WriteLn(LResponseBody);
+        Log(LResponseBody);
       end;
       hmPost: begin
-        WriteLn('POST ' + AURL);
-        WriteLn(ABody);
+        Log('POST ' + AURL);
+        Log(ABody);
         with TFPHTTPClient.Create(nil) do
           try
             for LHeader in AHeaders do
@@ -82,10 +96,10 @@ begin
           finally
             Free;
           end;
-        WriteLn(LResponseBody);
+        Log(LResponseBody);
       end;
     end;
-    WriteLn;
+    Log;
     Result := GetJSON(LResponseBody);
   finally
     if not Assigned(Result) then Result := TJSONObject.Create;
@@ -113,5 +127,10 @@ begin
   else
     Result := ADefault;
 end;
+
+{$ifdef enablelogging}
+initialization
+  IsLoggingEnabled := true;
+{$endif}
 
 end.
