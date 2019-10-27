@@ -2,6 +2,10 @@
 
 # Raspberry Pi Hub
 
+## Fungsi dan Fitur
+
+Secara terus-menerus melakukan sinkronisasi data antara API *server* dengan Arduino dan mengeksekusi penjadwalan buka/tutup keran otomatis manual.
+
 ## Legend
 
 `$`: perintah dieksekusi dengan hak akses pengguna normal
@@ -11,6 +15,22 @@
 ## Arsitektur dan Graf Kebergantungan
 
 ![depgraph](/mnt/Data/Works/Free/Smart-Farm/docs/hub/depgraph.png)
+
+## Fungsi Tiap Unit dan Program
+
+* Utils:
+  * Mengabstraksi pencatatan untuk *debugging* maupun *monitoring*
+  * Mengabstaksi permintaan HTTP dan menguraikan tanggapan JSON
+  * Menyediakan pembantu untuk mendapatkan nilai murni dari sebuah simpul JSON
+* SmartFarmArduino:
+  * Mengabstraksi pengambilan/pembaruan data dari/ke Arduino, termasuk menangani ketidakstabilan tanggapan terhadap permintaan HTTP ke Arduino
+* SmartFarmServer:
+  * Mengabstraksi pengambilan/pembaruan data dari/ke API server
+* SmartFarmHub:
+  * Sekaligus sebagai program utama
+  * Membaca konfigurasi dan menyebarkan isinya ke SmartFarmArduino dan SmartFarmServer
+  * Menghubungkan fungsionalitas dari SmartFarmArduino dan SmartFarmServer
+  * Melakukan penguraian dan pencocokan jadwal sesuai dengan waktu dan kondisi yang diminta
 
 ## Cara Kompilasi
 
