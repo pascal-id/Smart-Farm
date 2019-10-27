@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Raspberry Pi Hub application for the Smart Farm IoT project
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/pismartfarm
+ExecStart=/opt/pismartfarm/smartfarmhub
+
+[Install]
+WantedBy=multi-user.target
+

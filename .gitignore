@@ -220,3 +220,7 @@ backup.bat
 backup.sh
 /source/hub/smartfarmhub
 /source/arduino/arduinodummyserver
+/source/hub/smartfarmhub.debug-pc
+/source/hub/smartfarmhub.debug-raspi
+/source/hub/smartfarmhub.release-pc
+/source/hub/smartfarmhub.release-raspi
