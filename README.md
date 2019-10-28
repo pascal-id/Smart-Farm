@@ -4,6 +4,8 @@ Repository ini menyimpan source API dan Hub yang digunakan dalam workshop SmartF
 
 Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi.
 
+Presentasi: https://docs.google.com/presentation/d/1PJFVdCUmg1W3Jqlzk9VGxM3l-TUkNQhChRoK5CxJ0HM
+
 ## Arsitektur
 
 ![Arsitektur](docs/api/images/arsitektur.png)
