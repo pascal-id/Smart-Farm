@@ -4,8 +4,6 @@ Repository ini menyimpan source API dan Hub yang digunakan dalam workshop SmartF
 
 Penekanan pada konsep dan pembelajaran, bukan untuk penggunaan di level produksi.
 
-Presentasi: https://docs.google.com/presentation/d/1PJFVdCUmg1W3Jqlzk9VGxM3l-TUkNQhChRoK5CxJ0HM
-
 ## Arsitektur
 
 ![Arsitektur](docs/api/images/arsitektur.png)
@@ -26,18 +24,30 @@ Proses komunikasi dilakukan melalui API (_Application Programming Interface_)
 - Free Pascal Compiler, [https://www.freepascal.org/](https://www.freepascal.org/)
 - FastPlaz framework, [http://fastplaz.com/](http://fastplaz.com/)
 
-### Compiling
+### Kompilasi
 
 - [Build API](docs/Build-API.md)
-- [Build Hub (Rasberry Pi)](docs/Build-API.md)
+- [Build Hub (Rasberry Pi)](docs/hub/hub.md)
+- [Arduino Dummy Server](docs/arduino/dummyserver.md)
 
 ## Detail Penggunaan Endpoint API
 
-- [Station List](docs/Station.md)
-- [Node](docs/Node.md)
-- [Node History](docs/Node-History.md)
-- [Schedule](docs/Schedule.md)
-- [Konvensi Transmisi Data](docs/Convention.md)
+- [Station List](docs/api/Station.md)
+- [Node](docs/api/Node.md)
+- [Node History](docs/api/Node-History.md)
+- [Schedule](docs/api/Schedule.md)
+- [Konvensi Transmisi Data](docs/api/Convention.md)
+
+## Kontributor
+
+- [Tigor Manurung](https://www.facebook.com/einsthonk)
+- [Mario Ray Mahardhika](https://www.facebook.com/leledumbo2503)
+- [Maskofa](https://www.facebook.com/profile.php?id=100009038417471)
+- [Iwan Cahyadi Sugeng](https://www.facebook.com/iwan.c.sugeng)
+- [Luri Darmawan](https://www.facebook.com/luridarmawan)
+
+
+Materi [Presentasi](https://docs.google.com/presentation/d/1PJFVdCUmg1W3Jqlzk9VGxM3l-TUkNQhChRoK5CxJ0HM) tersedia di google-docs.
 
 Thanks
 
