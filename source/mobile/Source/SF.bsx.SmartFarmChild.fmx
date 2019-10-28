@@ -1,0 +1,88 @@
+inherited frmBaseChild: TfrmBaseChild
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    Size.Height = 459.000000000000000000
+    Sizes = (
+      321s
+      410s
+      321s
+      410s
+      321s
+      410s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+  end
+  inherited lytHeader: TLayout
+    Size.Height = 25.000000000000000000
+    object lblTitle: TLabel
+      Align = Contents
+      StyledSettings = [FontColor]
+      Size.Width = 321.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Center
+      Text = 'Schedule'
+      TabOrder = 0
+    end
+    object btnBack: TButton
+      Align = Left
+      DisableFocusEffect = True
+      Size.Width = 33.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'spinleftbutton'
+      TabOrder = 1
+      Text = 'btnBack'
+      OnClick = btnBackClick
+    end
+    object lblBackCaption: TLabel
+      Align = Left
+      StyledSettings = [Style]
+      FocusControl = btnBack
+      HitTest = True
+      Position.X = 33.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      TextSettings.Font.Size = 10.000000000000000000
+      TextSettings.FontColor = xFF006CFF
+      Text = 'Back'
+      TabOrder = 2
+      OnClick = btnBackClick
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+end

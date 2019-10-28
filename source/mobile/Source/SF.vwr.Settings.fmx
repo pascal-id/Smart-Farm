@@ -1,0 +1,180 @@
+inherited frmSettings: TfrmSettings
+  Caption = 'Settings'
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    TabIndex = 2
+    Sizes = (
+      321s
+      378s
+      321s
+      378s
+      321s
+      378s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      IsSelected = False
+      ImageIndex = 1
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      IsSelected = True
+      ImageIndex = 4
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+      object lytStation: TLayout
+        Align = Top
+        Size.Width = 321.000000000000000000
+        Size.Height = 57.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object imgProfile: TImage
+          MultiResBitmap = <
+            item
+            end>
+          Align = MostLeft
+          Size.Width = 73.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object lblAccountName: TLabel
+          Align = Client
+          StyledSettings = [Size, Style, FontColor]
+          Size.Width = 248.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          Text = 'Nama User'
+          TabOrder = 2
+        end
+        object lblDescription: TLabel
+          Align = Bottom
+          StyledSettings = [Style, FontColor]
+          Position.X = 73.000000000000000000
+          Position.Y = 34.000000000000000000
+          Size.Width = 248.000000000000000000
+          Size.Height = 23.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          TextSettings.Font.Size = 11.000000000000000000
+          Text = 'Nama User'
+          TabOrder = 1
+        end
+      end
+      object lvSettingList: TListView
+        ItemAppearanceClassName = 'TImageListItemAppearance'
+        ItemEditAppearanceClassName = 'TImageListItemDeleteAppearance'
+        HeaderAppearanceClassName = 'TListHeaderObjects'
+        FooterAppearanceClassName = 'TListHeaderObjects'
+        Transparent = True
+        Images = ilListViewImages
+        Align = Client
+        Size.Width = 321.000000000000000000
+        Size.Height = 321.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        OnItemClickEx = lvSettingListItemClickEx
+        ShowSelection = False
+      end
+    end
+  end
+  inherited lytHeader: TLayout
+    inherited lblTitle: TLabel
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Settings'
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+  object ilListViewImages: TImageList
+    Source = <
+      item
+        MultiResBitmap = <
+          item
+            Width = 12
+            Height = 18
+            PNG = {
+              89504E470D0A1A0A0000000D494844520000000C0000001208060000006FA93F
+              0C000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+              00AC49444154384F638081D099FFFF8330940B07E8E24C509A68407B0D8CC1D3
+              FF3B3030FE99CFC4C8A20015C30AFEFDFFF380E13F4B221323E3EF0584148300
+              580DD860465679A8184100D234084389740DFFFFFFBD0865130420B54CBFD999
+              1D88D104520352CB08E2F8CFFF2FC0FAF3EF014646667DB02C1A8029DE98C8F8
+              01AC0104409AD87E313C0032F921221080AC18C4877B1A24F08F816102940B07
+              FF199937C0148300AD839581010003C448CE0DECD3CC0000000049454E44AE42
+              6082}
+            FileName = 
+              'D:\Projects\Versioning\KPPDI\SmartFarm\Resource\StationSettings.' +
+              'png'
+          end>
+        Name = 'StationSettings'
+      end
+      item
+        MultiResBitmap = <
+          item
+            Width = 18
+            Height = 18
+            PNG = {
+              89504E470D0A1A0A0000000D494844520000001200000012080600000056CE8E
+              57000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+              016249444154384F9593B14EC33010407336B075AA54910F20B5DA7FE003A884
+              D8D8211B0B2303DD18F8800E08152418D9402A1FC007C0D421EA0750A9DDBA26
+              3577C7598A5B276DDFE2BBC879399F2F109578EE76CFC1DACB254003D75F0018
+              1579FE9666D942B654A264659679FEB98CA229C51620C638555ABF3C1813F386
+              1A3C117DD916C55564ED441EB1F040A97B492B514F9D4EFFD19844F22A593234
+              A627691015019CEC2B3528CB086C9E9590D15A1F4918848F46CD75B261BBDDC0
+              BE0CA80ADE21586BBD7C15E58EE064210903F02D51108557FC2531CB82927F0E
+              650DC273840D7FC52FD6F680C0CDA38BF1F84E520FEE11DD120EE00F3FA901BB
+              DFC3A1BD95D4C39B6C6AF69ED6C792F234E3CBD79C950855E68942D0FC80D66B
+              55ACCAB4AC957CCCE793D366730A4AB94A1DC959AB15BFCF667C591B45C436B2
+              8D472B5377CCAD2A725456662DEC2422D664F867D0F8EC2C229C0C7F0B9AC19B
+              34CB167F261793C55BFF59020000000049454E44AE426082}
+            FileName = 
+              'D:\Projects\Versioning\KPPDI\SmartFarm\Resource\GeneralSettings.' +
+              'png'
+          end>
+        Name = 'GeneralSettings'
+      end>
+    Destination = <
+      item
+        Layers = <
+          item
+            Name = 'StationSettings'
+            SourceRect.Right = 12.000000000000000000
+            SourceRect.Bottom = 18.000000000000000000
+          end>
+      end
+      item
+        Layers = <
+          item
+            Name = 'GeneralSettings'
+            SourceRect.Right = 18.000000000000000000
+            SourceRect.Bottom = 18.000000000000000000
+          end>
+      end>
+    Left = 64
+    Top = 208
+  end
+end

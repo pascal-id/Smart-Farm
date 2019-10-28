@@ -1,0 +1,92 @@
+inherited frmSettingsStation: TfrmSettingsStation
+  Caption = 'Station Controls'
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    TabIndex = 2
+    Sizes = (
+      321s
+      410s
+      321s
+      410s
+      321s
+      410s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      IsSelected = False
+      ImageIndex = 1
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      IsSelected = True
+      ImageIndex = 4
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+      object lvSettingList: TListView
+        ItemAppearanceClassName = 'TImageListItemBottomDetailAppearance'
+        ItemEditAppearanceClassName = 'TImageListItemBottomDetailShowCheckAppearance'
+        HeaderAppearanceClassName = 'TListHeaderObjects'
+        FooterAppearanceClassName = 'TListHeaderObjects'
+        OnUpdateObjects = lvSettingListUpdateObjects
+        Transparent = True
+        Align = Client
+        Size.Width = 321.000000000000000000
+        Size.Height = 377.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        ItemAppearanceObjects.ItemObjects.Accessory.AccessoryType = Checkmark
+        ItemAppearanceObjects.ItemObjects.Image.Visible = False
+        OnItemClickEx = lvSettingListItemClickEx
+      end
+      object lytStation: TLayout
+        Align = Top
+        Size.Width = 321.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object cbbStationList: TComboBox
+          Align = Right
+          Position.X = 168.000000000000000000
+          Size.Width = 153.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'comboboxstyle'
+          TabOrder = 0
+        end
+      end
+    end
+  end
+  inherited lytHeader: TLayout
+    inherited lblTitle: TLabel
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Station Controls'
+    end
+    inherited lblBackCaption: TLabel
+      Text = 'Settings'
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+end

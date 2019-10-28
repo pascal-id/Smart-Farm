@@ -1,0 +1,773 @@
+inherited frmScheduleAdd: TfrmScheduleAdd
+  Caption = 'Schedule - Add'
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    TabIndex = 1
+    Sizes = (
+      321s
+      378s
+      321s
+      378s
+      321s
+      378s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      IsSelected = False
+      ImageIndex = 1
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      IsSelected = True
+      ImageIndex = 2
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+      object lytStation: TLayout
+        Align = Top
+        Size.Width = 321.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object cbbStationList: TComboBox
+          Align = Right
+          Position.X = 168.000000000000000000
+          Size.Width = 153.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          OnChange = cbbStationListChange
+        end
+      end
+      object lytSearchNode: TLayout
+        Align = Top
+        Padding.Left = 10.000000000000000000
+        Padding.Right = 10.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 33.000000000000000000
+        Size.Width = 311.000000000000000000
+        Size.Height = 72.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        object lblSearchNodeCaption: TLabel
+          Align = Top
+          StyledSettings = [Style, FontColor]
+          Position.X = 10.000000000000000000
+          Size.Width = 291.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          TextSettings.Font.Size = 15.000000000000000000
+          Text = 'Node ?'
+          TabOrder = 0
+        end
+        object lytSearchNodeValue: TLayout
+          Align = Client
+          Size.Width = 291.000000000000000000
+          Size.Height = 53.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object btnSearchNode: TButton
+            Align = Left
+            Position.Y = 2.000000000000000000
+            Size.Width = 48.000000000000000000
+            Size.Height = 48.000000000000000000
+            Size.PlatformDefault = False
+            StyleLookup = 'searchtoolbutton'
+            TabOrder = 0
+            Text = 'btnSearchNode'
+            OnClick = btnSearchNodeClick
+          end
+          object rctnglSearchNode: TRectangle
+            Align = Client
+            Fill.Kind = None
+            Margins.Bottom = 3.000000000000000000
+            Sides = [Bottom]
+            Size.Width = 243.000000000000000000
+            Size.Height = 50.000000000000000000
+            Size.PlatformDefault = False
+            object lblSearchNode: TLabel
+              Align = Client
+              StyledSettings = [Size, Style, FontColor]
+              HitTest = True
+              Size.Width = 243.000000000000000000
+              Size.Height = 50.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Family = 'Ubuntu'
+              Text = 'All Nodes'
+              TabOrder = 0
+              OnClick = btnSearchNodeClick
+            end
+          end
+        end
+      end
+      object lytSearchSchedule: TLayout
+        Align = Top
+        Padding.Left = 10.000000000000000000
+        Padding.Right = 10.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Position.Y = 105.000000000000000000
+        Size.Width = 311.000000000000000000
+        Size.Height = 72.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object lblSearchScheduleCaption: TLabel
+          Align = Top
+          StyledSettings = [Style, FontColor]
+          Position.X = 10.000000000000000000
+          Size.Width = 291.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          TextSettings.Font.Size = 15.000000000000000000
+          Text = 'When ?'
+          TabOrder = 0
+        end
+        object lytSearchScheduleValue: TLayout
+          Align = Client
+          Size.Width = 291.000000000000000000
+          Size.Height = 53.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          object btnSearchSchedule: TButton
+            Align = Left
+            Position.Y = 2.000000000000000000
+            Size.Width = 48.000000000000000000
+            Size.Height = 48.000000000000000000
+            Size.PlatformDefault = False
+            StyleLookup = 'organizetoolbutton'
+            TabOrder = 0
+            Text = 'btnSearch'
+            OnClick = btnSearchScheduleClick
+          end
+          object rctnglSearchSchedule: TRectangle
+            Align = Client
+            Fill.Kind = None
+            Margins.Bottom = 3.000000000000000000
+            Sides = [Bottom]
+            Size.Width = 243.000000000000000000
+            Size.Height = 50.000000000000000000
+            Size.PlatformDefault = False
+            object lblSearchSchedule: TLabel
+              Align = Client
+              StyledSettings = [Size, Style, FontColor]
+              HitTest = True
+              Size.Width = 243.000000000000000000
+              Size.Height = 50.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Family = 'Ubuntu'
+              TabOrder = 0
+              OnClick = btnSearchScheduleClick
+            end
+          end
+        end
+      end
+      object lytStatus: TLayout
+        Align = Top
+        Position.Y = 177.000000000000000000
+        Size.Width = 321.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        object swtchStatus: TSwitch
+          Align = Right
+          IsChecked = False
+          Margins.Top = 3.000000000000000000
+          Margins.Right = 10.000000000000000000
+          Margins.Bottom = 3.000000000000000000
+          Position.X = 267.000000000000000000
+          Position.Y = 7.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'switchstyle'
+          TabOrder = 0
+        end
+      end
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+  end
+  inherited lytHeader: TLayout
+    inherited lblTitle: TLabel
+      StyledSettings = []
+      HitTest = True
+      Margins.Bottom = 10.000000000000000000
+      Size.Width = 119.000000000000000000
+      Size.Height = 47.000000000000000000
+      TextSettings.Font.Size = 15.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.FontColor = xFF5599FF
+      TextSettings.VertAlign = Trailing
+      Text = 'Cancel'
+      TabOrder = 1
+      OnClick = lblTitleClick
+    end
+    object lblSave: TLabel
+      Align = Right
+      StyledSettings = []
+      HitTest = True
+      Margins.Right = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 192.000000000000000000
+      Size.Width = 119.000000000000000000
+      Size.Height = 47.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      TextSettings.Font.Size = 15.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.FontColor = xFF5599FF
+      TextSettings.HorzAlign = Trailing
+      TextSettings.VertAlign = Trailing
+      Text = 'Save'
+      TabOrder = 0
+      OnClick = lblSaveClick
+    end
+  end
+  object rctnglBackground: TRectangle [2]
+    Align = Contents
+    Fill.Color = claBlack
+    Opacity = 0.500000000000000000
+    Size.Width = 321.000000000000000000
+    Size.Height = 484.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    OnClick = rctnglBackgroundClick
+    object fltnmtnFadeIn: TFloatAnimation
+      Duration = 0.200000002980232200
+      PropertyName = 'Opacity'
+      StartValue = 0.000000000000000000
+      StopValue = 0.000000000000000000
+    end
+  end
+  object lytScheduleAddNode: TLayout [3]
+    Position.X = 40.000000000000000000
+    Position.Y = 136.000000000000000000
+    Size.Width = 241.000000000000000000
+    Size.Height = 329.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 3
+    object rctnglScheduleAddNodeCancel: TRectangle
+      Align = Bottom
+      Fill.Color = claWhite
+      Margins.Bottom = 5.000000000000000000
+      Position.Y = 283.000000000000000000
+      Size.Width = 241.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      XRadius = 10.000000000000000000
+      YRadius = 10.000000000000000000
+      OnClick = rctnglScheduleAddNodeCancelClick
+      object lblCancel: TLabel
+        Align = Client
+        StyledSettings = []
+        Size.Width = 241.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Ubuntu'
+        TextSettings.Font.Size = 20.000000000000000000
+        TextSettings.HorzAlign = Center
+        Text = 'Cancel'
+        TabOrder = 0
+      end
+    end
+    object rctnglScheduleAddNodeList: TRectangle
+      Align = Client
+      Fill.Color = claWhite
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 241.000000000000000000
+      Size.Height = 278.000000000000000000
+      Size.PlatformDefault = False
+      XRadius = 10.000000000000000000
+      YRadius = 10.000000000000000000
+      object vrtscrlbxNodeList: TVertScrollBox
+        Align = Client
+        Size.Width = 241.000000000000000000
+        Size.Height = 278.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 241.000000000000000000
+        Viewport.Height = 278.000000000000000000
+      end
+    end
+    object fltnmtnScheduleAddNode: TFloatAnimation
+      Duration = 0.200000002980232200
+      PropertyName = 'Position.Y'
+      StartValue = 10.000000000000000000
+      StopValue = 1.000000000000000000
+    end
+  end
+  object lytScheduleAddTime: TLayout [4]
+    Position.Y = 72.000000000000000000
+    Size.Width = 321.000000000000000000
+    Size.Height = 369.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 4
+    object rctngScheduleAddTimeBackground: TRectangle
+      Align = Client
+      Fill.Color = claWhite
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 321.000000000000000000
+      Size.Height = 364.000000000000000000
+      Size.PlatformDefault = False
+      object lytScheduleAddTimeDone: TLayout
+        Align = Top
+        Size.Width = 321.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblScheduleAddTimeDone: TLabel
+          Align = Right
+          StyledSettings = []
+          HitTest = True
+          Margins.Right = 10.000000000000000000
+          Position.X = 229.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          TextSettings.Font.Size = 20.000000000000000000
+          TextSettings.HorzAlign = Trailing
+          Text = 'Done'
+          TabOrder = 0
+          OnClick = lblScheduleAddTimeDoneClick
+        end
+      end
+      object lytScheduleAddTimeSelector: TLayout
+        Align = Top
+        Padding.Top = 7.000000000000000000
+        Padding.Bottom = 7.000000000000000000
+        Position.Y = 33.000000000000000000
+        Size.Width = 321.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object lytScheduleAddTimeSelectorButtons: TLayout
+          Tag = 1
+          Align = HorzCenter
+          Position.X = 95.000000000000000000
+          Position.Y = 7.000000000000000000
+          Size.Width = 130.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          object rctnglScheduleAddTimeSelectorTime: TRectangle
+            Align = Left
+            Fill.Color = xFF5599FF
+            Size.Width = 65.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF5599FF
+            object lblScheduleAddTimeSelectorTime: TLabel
+              Tag = 1
+              Align = Client
+              StyledSettings = []
+              HitTest = True
+              Size.Width = 65.000000000000000000
+              Size.Height = 26.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.FontColor = claWhite
+              TextSettings.HorzAlign = Center
+              Text = 'Time'
+              TabOrder = 0
+              OnClick = OnScheduleAddTimeSelector_Click
+            end
+          end
+          object rctnglScheduleAddTimeSelectorTrigger: TRectangle
+            Align = Right
+            Fill.Color = claWhite
+            Position.X = 65.000000000000000000
+            Size.Width = 65.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF5599FF
+            object lblScheduleAddTimeSelectorTrigger: TLabel
+              Tag = 2
+              Align = Client
+              StyledSettings = []
+              HitTest = True
+              Size.Width = 65.000000000000000000
+              Size.Height = 26.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.FontColor = xFF5599FF
+              TextSettings.HorzAlign = Center
+              Text = 'When'
+              TabOrder = 0
+              OnClick = OnScheduleAddTimeSelector_Click
+            end
+          end
+        end
+      end
+      object tbcScheduleAddTimeMode: TTabControl
+        Align = Client
+        Margins.Left = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 317.000000000000000000
+        Size.Height = 281.000000000000000000
+        Size.PlatformDefault = False
+        TabHeight = 49.000000000000000000
+        TabIndex = 0
+        TabOrder = 2
+        TabPosition = None
+        Sizes = (
+          317s
+          281s
+          317s
+          281s)
+        object tbtmScheduleAddTimeModeTime: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = True
+          Size.Width = 8.000000000000000000
+          Size.Height = 8.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'When'
+          ExplicitSize.cx = 8.000000000000000000
+          ExplicitSize.cy = 8.000000000000000000
+          object rbScheduleAddTimeDay: TRadioButton
+            Align = Top
+            StyledSettings = []
+            Margins.Left = 10.000000000000000000
+            Margins.Right = 10.000000000000000000
+            Position.X = 10.000000000000000000
+            Size.Width = 297.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = 'Day'
+            TextSettings.Font.Family = 'Ubuntu'
+            TextSettings.Font.Size = 15.000000000000000000
+          end
+          object rbScheduleAddTimeOneTime: TRadioButton
+            Align = Top
+            StyledSettings = []
+            Margins.Left = 10.000000000000000000
+            Margins.Right = 10.000000000000000000
+            Position.X = 10.000000000000000000
+            Position.Y = 219.000000000000000000
+            Size.Width = 297.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            Text = 'One Time'
+            TextSettings.Font.Family = 'Ubuntu'
+            TextSettings.Font.Size = 15.000000000000000000
+          end
+          object dtdtScheduleAddTimeOneTimeDate: TDateEdit
+            Date = 43758.000000000000000000
+            Format = 'dd MMMM yyyy'
+            Align = Top
+            Margins.Left = 35.000000000000000000
+            Margins.Right = 10.000000000000000000
+            Position.X = 35.000000000000000000
+            Position.Y = 253.000000000000000000
+            Size.Width = 272.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            StyleLookup = 'dateeditstyle'
+            StyledSettings = []
+            TabOrder = 2
+            TextSettings.Font.Family = 'Ubuntu'
+            TextSettings.Font.Size = 15.000000000000000000
+          end
+          object lytScheduleAddTimeModeDays: TLayout
+            Align = Top
+            Margins.Left = 10.000000000000000000
+            Margins.Right = 10.000000000000000000
+            Position.X = 10.000000000000000000
+            Position.Y = 34.000000000000000000
+            Size.Width = 297.000000000000000000
+            Size.Height = 151.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 3
+            object chkScheduleAddTimeDayFriday: TCheckBox
+              Tag = 4
+              StyledSettings = []
+              Position.X = 24.000000000000000000
+              Position.Y = 72.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 0
+              Text = 'Friday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDayMonday: TCheckBox
+              StyledSettings = []
+              Position.X = 24.000000000000000000
+              Position.Y = 8.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 1
+              Text = 'Monday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDaySaturday: TCheckBox
+              Tag = 5
+              StyledSettings = []
+              Position.X = 152.000000000000000000
+              Position.Y = 72.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 2
+              Text = 'Saturday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDaySunday: TCheckBox
+              Tag = 6
+              StyledSettings = []
+              Position.X = 24.000000000000000000
+              Position.Y = 104.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 3
+              Text = 'Sunday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDayThursday: TCheckBox
+              Tag = 3
+              StyledSettings = []
+              Position.X = 152.000000000000000000
+              Position.Y = 40.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 4
+              Text = 'Thursday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDayTuesday: TCheckBox
+              Tag = 1
+              StyledSettings = []
+              Position.X = 152.000000000000000000
+              Position.Y = 8.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 5
+              Text = 'Tuesday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object chkScheduleAddTimeDayWednesday: TCheckBox
+              Tag = 2
+              StyledSettings = []
+              Position.X = 24.000000000000000000
+              Position.Y = 40.000000000000000000
+              Size.Width = 113.000000000000000000
+              Size.Height = 19.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 6
+              Text = 'Wednesday'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+          end
+          object lytScheduleAddTimeModeHours: TLayout
+            Align = Top
+            Margins.Left = 10.000000000000000000
+            Margins.Right = 10.000000000000000000
+            Position.X = 10.000000000000000000
+            Position.Y = 185.000000000000000000
+            Size.Width = 297.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 4
+            object tmdtScheduleAddTimeDayTime: TTimeEdit
+              Time = 0.024622951388888890
+              Align = Left
+              Margins.Left = 25.000000000000000000
+              Position.X = 25.000000000000000000
+              Position.Y = 1.000000000000000000
+              Size.Width = 72.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+              StyleLookup = 'timeeditstyle'
+              StyledSettings = []
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+              TabOrder = 0
+            end
+          end
+        end
+        object tbtmScheduleAddTimeModeTrigger: TTabItem
+          CustomIcon = <
+            item
+            end>
+          IsSelected = False
+          Size.Width = 8.000000000000000000
+          Size.Height = 8.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = ''
+          TabOrder = 0
+          Text = 'Time'
+          ExplicitSize.cx = 8.000000000000000000
+          ExplicitSize.cy = 8.000000000000000000
+          object lytScheduleAddTimeModeTriggerHunidity: TLayout
+            Align = Top
+            Size.Width = 317.000000000000000000
+            Size.Height = 41.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            object rbHumidity: TRadioButton
+              Align = Client
+              StyledSettings = []
+              IsChecked = True
+              Size.Width = 216.000000000000000000
+              Size.Height = 41.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 0
+              Text = 'Humidity'
+              TextSettings.Font.Family = 'Ubuntu Mono'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object spnbxHumidity: TSpinBox
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Right
+              StyleLookup = 'spinboxstyle'
+              TabOrder = 1
+              Cursor = crIBeam
+              DecimalDigits = 1
+              Value = 0.300000011920929000
+              ValueType = Float
+              Position.X = 216.000000000000000000
+              Position.Y = 4.000000000000000000
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+              Size.Width = 101.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+              StyledSettings = []
+            end
+          end
+          object lytScheduleAddTimeModeTriggerTemperature: TLayout
+            Align = Top
+            Position.Y = 41.000000000000000000
+            Size.Width = 317.000000000000000000
+            Size.Height = 41.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            object rbTemperature: TRadioButton
+              Align = Client
+              StyledSettings = []
+              Size.Width = 216.000000000000000000
+              Size.Height = 41.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 0
+              Text = 'Temperature (Celciuse)'
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+            end
+            object spnbxTemperature: TSpinBox
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Right
+              StyleLookup = 'spinboxstyle'
+              TabOrder = 1
+              Cursor = crIBeam
+              DecimalDigits = 0
+              Min = 20.000000000000000000
+              Max = 60.000000000000000000
+              Value = 20.000000000000000000
+              ValueType = Float
+              Position.X = 216.000000000000000000
+              Position.Y = 4.000000000000000000
+              TextSettings.Font.Family = 'Ubuntu'
+              TextSettings.Font.Size = 15.000000000000000000
+              Size.Width = 101.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+              StyledSettings = []
+            end
+          end
+        end
+      end
+    end
+    object fltnmtnScheduleAddTime: TFloatAnimation
+      Duration = 0.200000002980232200
+      PropertyName = 'Position.Y'
+      StartValue = 0.000000000000000000
+      StopValue = 0.000000000000000000
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+  inherited actlstNavigation: TActionList
+    Left = 240
+  end
+  object fdmtblSchedules: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 88
+    Top = 184
+    object strngfldSchedulesSTATION_ID: TStringField
+      FieldName = 'STATION_ID'
+      Size = 100
+    end
+    object strngfldSchedulesNODE_ID: TStringField
+      FieldName = 'NODE_ID'
+      Size = 100
+    end
+    object intgrfldSchedulesTYPE: TIntegerField
+      FieldName = 'TYPE'
+    end
+    object intgrfldSchedulesMODE: TIntegerField
+      FieldName = 'MODE'
+    end
+    object strngfldSchedulesVALUE: TStringField
+      FieldName = 'VALUE'
+    end
+    object strngfldSchedulesACTIVE: TStringField
+      FieldName = 'ACTIVE'
+      Size = 100
+    end
+    object strngfldSchedulesDAYS: TStringField
+      FieldName = 'DAYS'
+      Size = 100
+    end
+  end
+end

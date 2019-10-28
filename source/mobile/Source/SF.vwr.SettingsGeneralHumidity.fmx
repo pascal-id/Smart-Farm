@@ -1,0 +1,101 @@
+inherited frmSettingsGeneralHumidity: TfrmSettingsGeneralHumidity
+  Caption = 'frmBaseChild2'
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    TabOrder = 0
+    Sizes = (
+      321s
+      410s
+      321s
+      410s
+      321s
+      410s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      ImageIndex = 1
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      ImageIndex = 4
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+      object lytHumidity: TLayout
+        Align = Top
+        Padding.Left = 10.000000000000000000
+        Padding.Right = 10.000000000000000000
+        Margins.Left = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Position.X = 5.000000000000000000
+        Size.Width = 311.000000000000000000
+        Size.Height = 72.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object lblHumidityCaption: TLabel
+          Align = Top
+          StyledSettings = [Style]
+          Margins.Top = 3.000000000000000000
+          Margins.Bottom = 3.000000000000000000
+          Position.X = 10.000000000000000000
+          Position.Y = 35.000000000000000000
+          Size.Width = 291.000000000000000000
+          Size.Height = 19.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Family = 'Ubuntu'
+          TextSettings.Font.Size = 8.000000000000000000
+          TextSettings.FontColor = xFFB9B9B9
+          Text = 'Humidity in RH'
+          TabOrder = 0
+        end
+        object edtHumidity: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Top
+          TabOrder = 1
+          Text = '0,4'
+          Position.X = 10.000000000000000000
+          Size.Width = 291.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
+    end
+  end
+  inherited lytHeader: TLayout
+    TabOrder = 1
+    inherited lblTitle: TLabel
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Humidity Standard'
+    end
+    inherited btnBack: TButton
+      Size.Width = 25.000000000000000000
+    end
+    inherited lblBackCaption: TLabel
+      Position.X = 25.000000000000000000
+      Text = 'General Settings'
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+end

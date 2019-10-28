@@ -1,0 +1,63 @@
+inherited frmBaseMain: TfrmBaseMain
+  Caption = 'frmBase2'
+  OnKeyDown = FormKeyDown
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    Sizes = (
+      321s
+      378s
+      321s
+      378s
+      321s
+      378s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+  end
+  inherited lytHeader: TLayout
+    object lblTitle: TLabel
+      Align = Left
+      StyledSettings = [FontColor]
+      Margins.Left = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Size.Width = 151.000000000000000000
+      Size.Height = 57.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      TextSettings.Font.Size = 24.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Schedule'
+      TabOrder = 0
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+end

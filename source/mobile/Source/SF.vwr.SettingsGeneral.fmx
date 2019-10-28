@@ -1,0 +1,112 @@
+inherited frmSettingsGeneral: TfrmSettingsGeneral
+  Caption = 'General Settings'
+  DesignerMasterStyle = 3
+  inherited tbcDevices: TTabControl
+    Size.Height = 434.000000000000000000
+    Sizes = (
+      321s
+      385s
+      321s
+      385s
+      321s
+      385s)
+    inherited tbtmHome: TTabItem
+      CustomIcon.Height = 20
+      CustomIcon.Width = 24
+      ImageIndex = 1
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSchedule: TTabItem
+      CustomIcon.Height = 25
+      CustomIcon.Width = 22
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+    end
+    inherited tbtmSettings: TTabItem
+      CustomIcon.Height = 22
+      CustomIcon.Width = 22
+      ImageIndex = 4
+      ExplicitSize.cx = 107.000000000000000000
+      ExplicitSize.cy = 49.000000000000000000
+      object Layout1: TLayout
+        Position.X = 136.000000000000000000
+        Position.Y = 208.000000000000000000
+        TabOrder = 0
+      end
+    end
+  end
+  inherited lytHeader: TLayout
+    inherited lblTitle: TLabel
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'General Settings'
+    end
+    inherited lblBackCaption: TLabel
+      Text = 'Settings'
+    end
+  end
+  object lytSettingHumidity: TLayout [2]
+    Align = Top
+    Margins.Left = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 25.000000000000000000
+    Size.Width = 311.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblSettingHumidity: TLabel
+      Align = Client
+      StyledSettings = [Style]
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Size.Width = 167.000000000000000000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      TextSettings.FontColor = xFFB9B9B9
+      TextSettings.HorzAlign = Trailing
+      Text = 'Standard Measure Is 0,4 RH'
+      TabOrder = 0
+    end
+    object lblSettingHumidityCaption: TLabel
+      Align = Left
+      StyledSettings = [Style, FontColor]
+      Margins.Top = 3.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 121.000000000000000000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Family = 'Ubuntu'
+      Text = 'Humidity Standard'
+      TabOrder = 1
+    end
+    object btnMore: TButton
+      Align = Right
+      Position.X = 288.000000000000000000
+      Size.Width = 23.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'spinrightbutton'
+      TabOrder = 2
+      Text = 'btnMore'
+      OnClick = btnMoreClick
+    end
+  end
+  inherited gstrmngrNavigation: TGestureManager
+    GestureData = <
+      item
+        Control = Owner
+        Collection = <
+          item
+            Action = actNextPanel
+            GestureID = sgiLeft
+          end
+          item
+            Action = actPreviousPanel
+            GestureID = sgiRight
+          end>
+      end>
+  end
+end
